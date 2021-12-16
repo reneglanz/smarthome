@@ -1,0 +1,10 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+	compile project(':')
+	compile project(':shd-api')
+	compile project(':shd-server')
+}
+

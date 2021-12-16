@@ -1,0 +1,9 @@
+plugins {
+    id 'java'
+    id 'eclipse' 
+}
+
+dependencies {
+	compile project(':')
+}
+

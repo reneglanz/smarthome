@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'eclipse'  
+ }
+
+dependencies {
+	implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+	implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+	compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.28.0'
+	compile('org.apache.ftpserver:ftpserver-core:1.0.6')
+	compile group: 'org.bouncycastle', name: 'bctls-jdk15on', version: '1.57'
+}
+
+allprojects {
+    repositories {
+        jcenter() 
+    }
+    
+	task deploy()  {
+		doLast {
+			if(project.name!="modules"){
+				println "deploy $project.name to $buildDir/libs"
+				copy {
+		    		from configurations.runtimeClasspath
+	   				from file("$buildDir/libs")
+	   	 			into project.property('deploy.dir')
+				}
+			}
+		}
+	}
+	
+	task cleanDeploy {
+		doLast {
+			if(project.name!="modules"){
+				delete fileTree(project.property('deploy.dir')).matching {
+			        include "**/*.jar"
+			    }
+			}
+		}
+	}
+}

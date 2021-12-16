@@ -1,0 +1,12 @@
+plugins {
+    id 'java'
+    id 'eclipse' 
+}
+
+dependencies {
+	compile project(':')
+	compile project(':shd-api')
+	implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+	implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+}
+
