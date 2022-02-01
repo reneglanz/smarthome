@@ -5,15 +5,20 @@ import de.core.http.HttpRequest;
 import de.core.http.HttpResponse;
 import de.core.http.handler.FixedLengthHttpResponse;
 import de.core.serialize.Coding;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.bouncycastle.util.Arrays;
 
 public class WebSocket implements AutoCloseable {
   private static final String WEB_SOCKET_KEY = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -161,6 +166,7 @@ public class WebSocket implements AutoCloseable {
     head = (byte)(head | (frame.getOpcode()).intvalue & 0xF);
     ostream.write(head);
     int length = (int)frame.getLength();
+    ByteArrayOutputStream boas=new ByteArrayOutputStream();
     if (length <= 125) {
       if (frame.isMask()) {
         ostream.write(0x80 | (byte)length);
@@ -171,7 +177,14 @@ public class WebSocket implements AutoCloseable {
       ostream.write(frame.isMask() ? 254 : 126);
       ostream.write(length >>> 8);
       ostream.write(length);
-    } 
+    } else {
+      ostream.write(frame.isMask()?0xFF : 127);
+	  BigInteger big=BigInteger.valueOf(length);
+	  byte[] b2=big.toByteArray();
+	  byte[] finalArr=new byte[8];
+	  System.arraycopy(b2, 0, finalArr, 8-b2.length, b2.length);
+	  ostream.write(finalArr);
+    }
     if (!frame.isMask())
       ostream.write(frame.getPayload()); 
   }
@@ -183,4 +196,46 @@ public class WebSocket implements AutoCloseable {
     } catch (IOException iOException) {}
     this.manager.removeWebSocket(this);
   }
+  
+  private static byte[] intToBytes(final int data) {
+	    return new byte[] {
+	    	(byte)((data >> 56) & 0xff),
+	    	(byte)((data >> 48) & 0xff),
+	    	(byte)((data >> 40) & 0xff),
+	    	(byte)((data >> 32) & 0xff),
+	    	(byte)((data >> 24) & 0xff),
+	        (byte)((data >> 16) & 0xff),
+	        (byte)((data >> 8) & 0xff),
+	        (byte)((data >> 0) & 0xff),
+	    };
+	}
+  
+  public static void main(String[] args) {
+	int length=180770;
+	ByteBuffer buff=ByteBuffer.allocate(8).putInt(length);
+	byte[] b=buff.array();
+	BigInteger big=BigInteger.valueOf(length);
+	byte[] b2=big.toByteArray();
+	byte[] finalArr=new byte[8];
+	System.arraycopy(b2, 0, finalArr, 8-b2.length, b2.length);
+
+	
+	byte[] b3=intToBytes(length);
+	
+	int i=ByteBuffer.wrap(b3).getInt();
+	
+	ByteArrayOutputStream baos=new ByteArrayOutputStream();
+	baos.write(length>>>56);
+	baos.write(length>>>48);
+	baos.write(length>>>40);
+	baos.write(length>>>32);
+	baos.write(length>>>24);
+	baos.write(length>>>16);
+	baos.write(length>>>8);
+	baos.write(length>>>0);
+	byte[] ba=baos.toByteArray();
+	ba=ba;
+  }
+  
 }
+

@@ -1,9 +1,10 @@
 package de.core.task;
 
+import java.util.UUID;
+
 import de.core.CoreException;
 import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Element;
-import java.util.UUID;
 
 public abstract class CronTask implements Task, Serializable {
   @Element
@@ -32,4 +33,5 @@ public abstract class CronTask implements Task, Serializable {
   public String toString() {
     return "CronTask [id=" + this.id + ", cronPattern=" + this.cronPattern + "]";
   }
+
 }

@@ -46,11 +46,11 @@ public class DiscoverHandler extends AbstractHandler implements Service {
             continue; 
           if (device instanceof de.shd.device.Switch) {
             capabillities.add(Capability.Factory.createPowerController());
-            endpoint.setDisplayCategories(new String[] { "SWITCH" });
+           	endpoint.setDisplayCategories(new String[] { device.getAlexaType("SWITCH") });
           } 
           if (device instanceof Light) {
             Light light = (Light)device;
-            endpoint.setDisplayCategories(new String[] { "LIGHT" });
+            endpoint.setDisplayCategories(new String[] { device.getAlexaType("LIGHT") });
             try {
               if (light.canColor())
                 capabillities.add(Capability.Factory.createColorController()); 

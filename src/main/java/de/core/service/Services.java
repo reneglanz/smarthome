@@ -63,7 +63,7 @@ public class Services {
     ServiceProvider<Service> provider0 = (ServiceProvider)provider.get((providerId != null) ? providerId : DEFAULT);
     if(provider0 != null) {
     	provider0.bind(service);
-    	logger.info("Bound service " + service.getClass().toString() + ((service.getServiceHandle() != null) ? ("[" + service.getServiceHandle() + "]") : "") + " provider " + provider0.getProviderId());
+      	logger.info("Bound service "+service.getServiceHandle()+"["+service.getClass().toString()+"] to " + providerId.toString());
     } 
   }
   
@@ -75,7 +75,7 @@ public class Services {
     ServiceProvider<Service> provider0 = (ServiceProvider)provider.get((providerId != null) ? providerId : DEFAULT);
     if(provider0 != null) {
     	provider0.unbind(service);
-    	logger.info("Unbound service " + service.getClass().toString() + ((service.getServiceHandle() != null) ? ("[" + service.getServiceHandle() + "]") : "") + " from provider " + provider0);
+       	logger.info("Unbind service "+service.getServiceHandle()+"["+service.getClass().toString()+"] from " + providerId.toString());
     } else {
     	CoreException.throwCoreException("No such provider " + providerId);
     } 

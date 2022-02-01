@@ -40,6 +40,10 @@ public class FtpServer implements Serializable, Launchable {
     public void register(IFtpFileHandler handler) {
       this.handler.add(handler);
     }
+    
+    public void deregister(IFtpFileHandler handler) {
+    	this.handler.remove(handler);
+    }
   }
   
   @Element(defaultValue = "21")

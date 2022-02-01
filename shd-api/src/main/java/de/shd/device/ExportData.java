@@ -19,7 +19,9 @@ public class ExportData implements Serializable {
 		this.device = device;
 		this.deviceName = deviceName;
 		for (Data d : data) {
-			this.data.add(d);
+			if(d!=null) {
+				this.data.add(d);
+			}
 		}
 	}
 	public ExportData(Handle device, String deviceName, List<Data> data) {

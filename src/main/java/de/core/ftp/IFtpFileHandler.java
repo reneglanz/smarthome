@@ -10,4 +10,8 @@ public interface IFtpFileHandler {
   default void registerFtpFileHandler() {
     FtpServer.ftlet.register(this);
   }
+  
+  default void deregisterFtpFileHandler() {
+	 FtpServer.ftlet.deregister(this);
+  }
 }

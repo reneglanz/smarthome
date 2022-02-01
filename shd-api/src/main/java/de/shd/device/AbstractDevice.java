@@ -15,6 +15,7 @@ public abstract class AbstractDevice implements Service, Serializable, Castable 
 	@Element protected String id;
 	@Element protected String name;
 	@Element(defaultValue = "false") protected boolean discoverable = false;
+	@Element protected String alexaType;
 	
 	protected UpdateService updateService;
 
@@ -56,4 +57,10 @@ public abstract class AbstractDevice implements Service, Serializable, Castable 
 	public boolean isDiscoverable() {
 		return this.discoverable;
 	}
+
+	public String getAlexaType(String default0) {
+		return alexaType!=null?alexaType:default0;
+	}
+	
+	
 }

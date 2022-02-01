@@ -26,7 +26,7 @@ public class StaticFileRequestHandler extends AbstractHttpRequestHandler {
   protected String welcomFile;
   
   @Element(defaultValue = "true")
-  protected boolean cacheFiles = true;
+  protected boolean cacheFiles = false;
   
   private Cache<String, byte[]> cache;
   

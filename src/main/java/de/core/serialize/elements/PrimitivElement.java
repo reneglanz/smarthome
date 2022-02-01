@@ -134,7 +134,7 @@ public class PrimitivElement extends Element {
           builder.append(tmp.charAt(i));
         } 
       } 
-      this.resolvedValue = builder.toString();
+      this.resolvedValue = builder.toString()+(entity&&entityName.length()>0?entityName.toString():"");
     } 
   }
   

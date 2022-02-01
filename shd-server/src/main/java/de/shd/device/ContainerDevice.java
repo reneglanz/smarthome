@@ -12,17 +12,23 @@ import de.core.serialize.annotation.Element;
 import de.core.service.Service;
 import de.core.service.ServiceProvider;
 import de.core.service.Services;
+import de.shd.device.data.SwitchData;
 import de.shd.update.UpdateService;
 
 public class ContainerDevice extends AbstractDevice 
 	implements Launchable,Switch,Light,Shutter,Range,Sensor,UpdateService {
 
+	public enum FollowMode {
+		LEADER,
+		DYNAMIC
+	}
+	
 	@Element(inline=true) NameHandle leader;
 	@Element List<NameHandle> follower; 
 	@Element(inline=true,inlineClasses={NameHandle.class})   Handle serviceProvider;
 	@Element String[] services;
+	@Element(defaultValue="LEADER") FollowMode followMode=FollowMode.LEADER;
 	
-	protected UpdateService updateService=null;
 	protected List<Service> devices=new ArrayList<Service>();
 	
 	@Override
@@ -60,15 +66,30 @@ public class ContainerDevice extends AbstractDevice
 
 	@Override
 	public State toggle() throws CoreException {
-		if(devices.get(0) instanceof Toggle) {
-			State state=null;
-			for(Service d:devices) {
-				State state0=((Toggle)d).toggle();
-				if(state==null) {
-					state=state0;
+		if(getLeader()instanceof Toggle) {
+			if(followMode==FollowMode.LEADER) {
+				State state0=((Toggle)getLeader()).toggle();
+				for(Service d:devices) {
+					if(!d.getServiceHandle().equals(getLeader().getServiceHandle())
+					   && d instanceof Switch) {
+						((Switch)d).setState(state0);
+					}
 				}
+				return state0;
+			} else if(followMode==FollowMode.DYNAMIC) {
+				State state0=State.OFF;
+				for(Service d:devices) if(d instanceof Switch){
+					if(((Switch) d).getState()==State.ON) {
+						state0=State.ON;
+						break;
+					}
+				}
+				State finalState=state0==State.ON?State.OFF:State.ON;
+				for(Service d:devices) if(d instanceof Switch){
+					((Switch)d).setState(finalState);
+				}
+				return finalState;
 			}
-			return state;
 		}
 		return State.UNKNOWN;
 	}
@@ -202,7 +223,18 @@ public class ContainerDevice extends AbstractDevice
 	@Override
 	public State getState() throws CoreException {
 		if(getLeader()instanceof Switch) {
-			return ((Switch)getLeader()).getState();
+			if(followMode==FollowMode.LEADER) {
+				return ((Switch)getLeader()).getState();
+			} else if(followMode==FollowMode.DYNAMIC) {
+				State state0=State.OFF;
+				for(Service d:devices) {
+					if(((Switch) d).getState()==State.ON) {
+						state0=State.ON;
+						break;
+					}
+				}
+				return state0;
+			}
 		}
 		return State.UNKNOWN;
 	}
@@ -242,8 +274,12 @@ public class ContainerDevice extends AbstractDevice
 		}
 		if (this.updateService != null) {
 			this.updateService.update(data);
-			if(data.device.equals(this.leader)) {
-				this.updateService.update(new ExportData(getDeviceHandle(), this.name, data.data));
+			if(followMode==FollowMode.LEADER) {
+				if(data.device.equals(this.leader)) {
+					this.updateService.update(new ExportData(getDeviceHandle(), this.name, data.data));
+				}
+			} else if(followMode==FollowMode.DYNAMIC) {
+				this.updateService.update(new ExportData(getDeviceHandle(), this.name, new SwitchData(this.getState())));
 			}
 		}
 	}

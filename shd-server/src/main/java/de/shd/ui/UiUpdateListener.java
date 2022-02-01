@@ -29,10 +29,11 @@ public class UiUpdateListener implements UpdateService.UpdateListener, WebSocket
   public void onMessage(WebSocketFrame frame) {}
   
   public void onOpen(WebSocket websocket) {
-    try {
-      for (AbstractDevice w : this.store)
+      for (AbstractDevice w : this.store) try {
         w.export(); 
-    } catch (Exception exception) {}
+      } catch (Throwable t) {
+    	  t=t;
+      }
   }
   
   public void onClose() {}

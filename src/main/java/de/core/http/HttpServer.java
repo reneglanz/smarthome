@@ -53,6 +53,10 @@ public class HttpServer implements Serializable {
     requestHandler.add(handler);
   }
   
+  public static void deregisterHttpRequestHandler(HttpRequestHandler handler) {
+	 requestHandler.remove(handler);
+  }
+  
   public void runHttpRequest(HttpRequestThread request) {
     this.threadPool.execute(request);
   }

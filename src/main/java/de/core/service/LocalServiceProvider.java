@@ -10,6 +10,7 @@ import de.core.CoreException;
 import de.core.Env;
 import de.core.handle.Handle;
 import de.core.handle.NameHandle;
+import de.core.log.Logger;
 import de.core.rt.Launchable;
 import de.core.rt.Releasable;
 import de.core.rt.Reloadable;
@@ -18,6 +19,7 @@ import de.core.serialize.annotation.Element;
 public class LocalServiceProvider<E extends Service> implements ServiceProvider<E>, Releasable, Launchable, Reloadable {
 	@Element(inline = true) protected NameHandle providerId;
 	protected Map<Handle, E> services = Collections.synchronizedMap(new HashMap<>());
+	private static Logger logger = Logger.createLogger("Services");
 	
 	protected LocalServiceProvider() {
 	}
@@ -28,6 +30,7 @@ public class LocalServiceProvider<E extends Service> implements ServiceProvider<
 
 	public void bind(E service) throws CoreException {
 		this.services.put(service.getServiceHandle(), service);
+    	logger.info("Bound service "+service.getServiceHandle()+"["+service.getClass().toString()+"] to " + providerId.toString());
 	}
 
 	public Handle getProviderId() {
@@ -52,11 +55,14 @@ public class LocalServiceProvider<E extends Service> implements ServiceProvider<
 
 	public void unbind(E service) throws CoreException {
 		this.services.remove(service.getServiceHandle());
+    	logger.info("Unbind service "+service.getServiceHandle()+"["+service.getClass().toString()+"] from " + providerId.toString());
 	}
 
 	@Override
 	public void unbind(Handle handle) throws CoreException {
 		this.services.remove(handle);
+    	logger.info("Unbind service "+handle.toString()+" from " + providerId.toString());
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -88,7 +94,9 @@ public class LocalServiceProvider<E extends Service> implements ServiceProvider<
 	public void load() throws CoreException {
 		Loader<Service> loader=new Loader<>(Paths.get(Env.get("install.dir"),"config",providerId.toString()));
 		try {
-			loader.load(new DefaultLoadConsumer(this, true));
+			DefaultLoadConsumer consumer=new DefaultLoadConsumer(this, false);
+			loader.load(consumer);
+			consumer.launch();
 		} catch (IOException e) {
 			CoreException.throwCoreException(e);
 		}

@@ -5,13 +5,17 @@ import de.core.http.HttpResponse;
 import de.core.http.HttpServer;
 
 public interface HttpRequestHandler {
-  HttpResponse handleRequest(HttpRequest paramHttpRequest);
-  
-  boolean canHandleRequest(HttpRequest paramHttpRequest);
-  
-  boolean keepAlive();
-  
-  default void registerHttpRequestHandler() {
-    HttpServer.registerHttpRequestHandler(this);
-  }
+	HttpResponse handleRequest(HttpRequest paramHttpRequest);
+
+	boolean canHandleRequest(HttpRequest paramHttpRequest);
+
+	boolean keepAlive();
+
+	default void registerHttpRequestHandler() {
+		HttpServer.registerHttpRequestHandler(this);
+	}
+
+	default void deregisterHttpRequestHandler() {
+		HttpServer.deregisterHttpRequestHandler(this);
+	}
 }

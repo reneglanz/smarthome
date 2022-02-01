@@ -1,6 +1,7 @@
 package de.core.mqtt;
 
 import de.core.CoreException;
+import de.core.Env;
 import de.core.log.Logger;
 import de.core.rt.Launchable;
 import de.core.rt.Releasable;
@@ -16,6 +17,7 @@ import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 @Injectable
 public class MqttClient implements Serializable, Launchable, Resource, Releasable {
@@ -125,7 +127,8 @@ public class MqttClient implements Serializable, Launchable, Resource, Releasabl
 	public void launch() throws CoreException {
 		try {
 			String url = ((this.factory != null) ? "ssl" : "tcp") + "://" + this.host + ":" + this.port;
-			this.client = (IMqttClient) new org.eclipse.paho.client.mqttv3.MqttClient(url, this.clientId);
+			this.client = (IMqttClient) new org.eclipse.paho.client.mqttv3.MqttClient(url, this.clientId,
+					new MqttDefaultFilePersistence(Env.get("install.dir")+"/data"));
 			MqttConnectOptions options = new MqttConnectOptions();
 			options.setCleanSession(true);
 			options.setConnectionTimeout(10);

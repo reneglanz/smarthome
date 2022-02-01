@@ -5,6 +5,7 @@ import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Injectable;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,3 +78,5 @@ public class WebSocketManager implements Serializable {
         });
   }
 }
+
+ 
