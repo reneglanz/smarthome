@@ -1,21 +1,20 @@
 package de.shd.automation.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.serialize.annotation.Element;
 import de.core.service.Call;
 import de.core.service.Services;
 import de.shd.automation.Data;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ServiceAction implements Action {
   @Element(inline = true)
-  NameHandle provider;
+  String provider;
   
   @Element(inline = true)
-  NameHandle service;
+  String service;
   
   @Element
   String method;
@@ -25,6 +24,6 @@ public class ServiceAction implements Action {
   
   public void execute(Data data) throws CoreException {
     data.getData().putAll(this.parameter);
-    Services.invoke(new Call((Handle)this.provider, (Handle)this.service, this.method, data.getData()));
+    Services.invoke(new Call(this.provider, this.service, this.method, data.getData()));
   }
 }

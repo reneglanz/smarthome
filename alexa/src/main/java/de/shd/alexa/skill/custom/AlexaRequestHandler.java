@@ -1,6 +1,5 @@
 package de.shd.alexa.skill.custom;
 
-import de.core.handle.NameHandle;
 import de.core.http.HttpHeader;
 import de.core.http.HttpRequest;
 import de.core.http.HttpResponse;
@@ -36,7 +35,7 @@ public class AlexaRequestHandler extends AbstractHttpRequestHandler {
   
   Logger logger = Logger.createLogger("AlexaRequestHandler");
   
-  protected NameHandle deviceProvider = new NameHandle("devices");
+  protected String deviceProvider = "devices";
   
   protected AlexaRequestHandler() {
     this.handler.add(new LaunchIntentHandler());

@@ -15,11 +15,12 @@ public class Camera extends AbstractDevice implements Sensor {
 
 	@Element protected String imageUrl;
 	@Element protected String videoUrl;
+	@Element protected String videoType;
 	@Element(defaultValue="10000") protected int imageRefreshRate=10000;
 	
 	@Override
 	public ExportData createExportData() {
-		return new ExportData(getDeviceHandle(), name);
+		return new ExportData(getDeviceId(), name);
 	}
 	
 	public String getDataUrl(byte[] image) {

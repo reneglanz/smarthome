@@ -2,8 +2,6 @@ package de.core.serialize;
 
 import de.core.CoreException;
 import de.core.Env;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.serialize.annotation.Element;
 import de.core.serialize.annotation.Injectable;
 import de.core.service.ServiceProvider;
@@ -78,7 +76,7 @@ public class FieldAccessor {
         if (ServiceProvider.class.isAssignableFrom(this.f.getType()) && key instanceof Class) {
           injectable = Services.getProvider((Class)key);
         } else if (ServiceProvider.class.isAssignableFrom(this.f.getType()) && key instanceof String) {
-          injectable = Services.getProvider((Handle)new NameHandle((String)key));
+          injectable = Services.getProvider((String)key);
         } else {
           injectable = Env.get(key);
         } 

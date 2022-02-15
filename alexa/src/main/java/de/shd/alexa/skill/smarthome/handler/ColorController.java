@@ -1,8 +1,8 @@
 package de.shd.alexa.skill.smarthome.handler;
 
+import java.util.HashMap;
+
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.shd.alexa.skill.smarthome.model.ColorHSB;
 import de.shd.alexa.skill.smarthome.model.Context;
 import de.shd.alexa.skill.smarthome.model.Endpoint;
@@ -14,7 +14,6 @@ import de.shd.alexa.skill.smarthome.model.Request;
 import de.shd.alexa.skill.smarthome.model.Response;
 import de.shd.device.AbstractDevice;
 import de.shd.device.Light;
-import java.util.HashMap;
 
 public class ColorController extends AbstractHandler {
   protected static HashMap<ColorHSB, Light.Color> colorMapping = new HashMap<>();
@@ -41,7 +40,7 @@ public class ColorController extends AbstractHandler {
     Header header = request.getDirective().getHeader();
     Endpoint endpoint = request.getDirective().getEndpoint();
     try {
-      AbstractDevice abstractDevice = getDeviceStore().getService((Handle)new NameHandle(endpoint.getEndpointId()));
+      AbstractDevice abstractDevice = getDeviceStore().getService(endpoint.getEndpointId());
       if (abstractDevice instanceof Light) {
         Light light = (Light)abstractDevice;
         Payload payload = request.getDirective().getPayload();

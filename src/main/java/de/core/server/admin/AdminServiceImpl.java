@@ -2,8 +2,6 @@ package de.core.server.admin;
 
 import de.core.CoreException;
 import de.core.Env;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.log.Logger;
 import de.core.server.Server;
 import de.core.task.Scheduler;
@@ -32,7 +30,7 @@ public class AdminServiceImpl implements AdminService {
     Logger.setRootLogLevel(level);
   }
   
-  public NameHandle getServiceHandle() {
-    return new NameHandle("admin");
+  public String getServiceHandle() {
+    return "admin";
   }
 }

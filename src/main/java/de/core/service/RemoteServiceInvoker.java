@@ -1,7 +1,6 @@
 package de.core.service;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
 import de.core.http.mime.MimeTypes;
 import de.core.serialize.Coding;
 import java.lang.reflect.InvocationHandler;
@@ -13,15 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RemoteServiceInvoker implements InvocationHandler, Invoker {
-  protected Handle provider;
-  
-  protected Handle service;
-  
+
+  protected String provider;
+  protected String service;
   protected String host;
-  
   protected int port;
   
-  public RemoteServiceInvoker(Handle providerId, Handle serviceId, String host, int port) {
+  public RemoteServiceInvoker(String providerId, String serviceId, String host, int port) {
     this.provider = providerId;
     this.service = serviceId;
     this.host = host;

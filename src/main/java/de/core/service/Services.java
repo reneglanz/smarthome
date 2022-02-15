@@ -1,8 +1,6 @@
 package de.core.service;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.log.Logger;
 import de.core.rt.Scope;
 import java.lang.reflect.Method;
@@ -13,9 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class Services {
-  private static final NameHandle DEFAULT = new NameHandle("default");
+  private static final String DEFAULT = "default";
   
-  private static HashMap<Handle, ServiceProvider<?>> provider = new HashMap<>();
+  private static HashMap<String, ServiceProvider<?>> provider = new HashMap<>();
   
   static {
     addProvider(new LocalServiceProvider(DEFAULT));
@@ -56,10 +54,10 @@ public class Services {
    };
   
   public static void bind(Service service) throws CoreException {
-    bind((Handle)DEFAULT, service);
+    bind(DEFAULT, service);
   }
   
-  public static void bind(Handle providerId, Service service) throws CoreException {
+  public static void bind(String providerId, Service service) throws CoreException {
     ServiceProvider<Service> provider0 = (ServiceProvider)provider.get((providerId != null) ? providerId : DEFAULT);
     if(provider0 != null) {
     	provider0.bind(service);
@@ -85,7 +83,7 @@ public class Services {
 	return get(null, null, serviceClazz);
   }	
   
-	public static <E> E get(Handle providerId, Handle serviceId, Class<E> type) throws CoreException {
+	public static <E> E get(String providerId, String serviceId, Class<E> type) throws CoreException {
 		ServiceProvider<Service> provider0 = (ServiceProvider) provider.get((providerId != null) ? providerId : DEFAULT);
 		Service service = null;
 		if (provider0 != null) {
@@ -112,12 +110,12 @@ public class Services {
     Services.provider.put(provider.getProviderId(), provider);
   }
   
-  public static ServiceProvider<?> getProvider(Handle handle) {
+  public static ServiceProvider<?> getProvider(String handle) {
     return provider.get(handle);
   }
   
   public static ServiceProvider<?> getProvider(Class<?> clazz) {
-    for (Map.Entry<Handle, ServiceProvider<?>> entry : provider.entrySet()) {
+    for (Map.Entry<String, ServiceProvider<?>> entry : provider.entrySet()) {
       if (clazz.isAssignableFrom(((ServiceProvider)entry.getValue()).getClass()))
         return entry.getValue(); 
     } 
@@ -125,7 +123,7 @@ public class Services {
   }
   
   public static ServiceProvider<?> getProvider(Service service) throws CoreException{
-	  for (Map.Entry<Handle, ServiceProvider<?>> entry : provider.entrySet()) {
+	  for (Map.Entry<String, ServiceProvider<?>> entry : provider.entrySet()) {
 		  Service service1=entry.getValue().getService(service.getServiceHandle());
 		  if(service1==service) {
 			  return entry.getValue();
@@ -134,7 +132,7 @@ public class Services {
 	  return null;
   }
   
-  private static Object createRemotes(Handle providerId, Handle serviceId, Class<? extends Service> type) throws CoreException {
+  private static Object createRemotes(String providerId, String serviceId, Class<? extends Service> type) throws CoreException {
     if (type != null) {
       RemoteServiceInvoker invoker = new RemoteServiceInvoker(providerId, serviceId, Scope.getServiceHost(), Scope.getServicePort());
       Object proxy = Proxy.newProxyInstance(Services.class.getClassLoader(), new Class[] { type }, invoker);

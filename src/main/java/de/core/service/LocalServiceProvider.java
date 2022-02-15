@@ -8,8 +8,6 @@ import java.util.Map;
 
 import de.core.CoreException;
 import de.core.Env;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.log.Logger;
 import de.core.rt.Launchable;
 import de.core.rt.Releasable;
@@ -17,14 +15,14 @@ import de.core.rt.Reloadable;
 import de.core.serialize.annotation.Element;
 
 public class LocalServiceProvider<E extends Service> implements ServiceProvider<E>, Releasable, Launchable, Reloadable {
-	@Element(inline = true) protected NameHandle providerId;
-	protected Map<Handle, E> services = Collections.synchronizedMap(new HashMap<>());
+	@Element protected String providerId;
+	protected Map<String, E> services = Collections.synchronizedMap(new HashMap<>());
 	private static Logger logger = Logger.createLogger("Services");
 	
 	protected LocalServiceProvider() {
 	}
 
-	public LocalServiceProvider(NameHandle providerId) {
+	public LocalServiceProvider(String providerId) {
 		this.providerId = providerId;
 	}
 
@@ -33,23 +31,11 @@ public class LocalServiceProvider<E extends Service> implements ServiceProvider<
     	logger.info("Bound service "+service.getServiceHandle()+"["+service.getClass().toString()+"] to " + providerId.toString());
 	}
 
-	public Handle getProviderId() {
-		return (Handle) this.providerId;
+	public String getProviderId() {
+		return this.providerId;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public E getService(Handle id) throws CoreException {
-		if (id instanceof NameHandle) {
-			String name = id.toString();
-			try {
-				Class clazz = Class.forName(name);
-				E service = (E) getService(clazz);
-				if (service != null) {
-					return service;
-				}
-			} catch (Throwable t) {
-			}
-		}
+	public E getService(String id) throws CoreException {
 		return this.services.get(id);
 	}
 
@@ -59,7 +45,7 @@ public class LocalServiceProvider<E extends Service> implements ServiceProvider<
 	}
 
 	@Override
-	public void unbind(Handle handle) throws CoreException {
+	public void unbind(String handle) throws CoreException {
 		this.services.remove(handle);
     	logger.info("Unbind service "+handle.toString()+" from " + providerId.toString());
 
@@ -67,9 +53,9 @@ public class LocalServiceProvider<E extends Service> implements ServiceProvider<
 
 	@SuppressWarnings("unchecked")
 	public E getService(Class<E> clazz) throws CoreException {
-		Service service = (Service) getService((Handle) new NameHandle(clazz.getName()));
+		Service service = (Service) getService(clazz.getName());
 		if (service == null) {
-			for (Map.Entry<Handle, E> entry : this.services.entrySet()) {
+			for (Map.Entry<String, E> entry : this.services.entrySet()) {
 				if (((Service) entry.getValue()).implements0(clazz))
 					return entry.getValue();
 			}
@@ -78,7 +64,7 @@ public class LocalServiceProvider<E extends Service> implements ServiceProvider<
 	}
 
 	public void release() throws CoreException {
-		for (Map.Entry<Handle, E> entry : this.services.entrySet()) {
+		for (Map.Entry<String, E> entry : this.services.entrySet()) {
 			if (entry.getValue() instanceof Releasable) {
 				((Releasable) entry.getValue()).release();
 			}

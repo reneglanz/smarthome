@@ -67,6 +67,6 @@ public class GraphDevice extends AbstractDevice implements Launchable, Releasabl
   }
   
   public ExportData createExportData() {
-    return new ExportData(getDeviceHandle(), name, (Data)this.data);
+    return new ExportData(getDeviceId(), name, (Data)this.data);
   }
 }

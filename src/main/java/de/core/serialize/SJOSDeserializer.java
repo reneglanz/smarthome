@@ -82,10 +82,12 @@ public class SJOSDeserializer {
 					if(cla!=null) {
 						try {
 							InlineSerializable inline=(InlineSerializable)cla.newInstance();
-							inline.deserialize(value);
-							f.set(obj, inline);
-							handledInline=true;
-							break;
+							if(inline!=null) {
+								inline.deserialize(value);
+								f.set(obj, inline);
+								handledInline=true;
+								break;
+							}
 						} catch(InlineSerializeException e) {}
 					}
 				}

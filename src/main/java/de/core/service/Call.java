@@ -2,8 +2,6 @@ package de.core.service;
 
 import de.core.CoreException;
 import de.core.auth.Token;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.serialize.Coding;
 import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Element;
@@ -15,10 +13,8 @@ public class Call implements Serializable {
 	@Element(inline = true)
 	private Token token;
 
-	@Element(inline = true, inlineClasses = { NameHandle.class })
-	protected Handle service;
-	@Element(inline = true, inlineClasses = { NameHandle.class })
-	protected Handle provider;
+	@Element protected String service;
+	@Element protected String provider;
 
 	@Element
 	protected String method;
@@ -35,7 +31,7 @@ public class Call implements Serializable {
 	protected Call() {
 	}
 
-	public Call(String host, int port, Token token, Handle provider, Handle service, String method,
+	public Call(String host, int port, Token token, String provider, String service, String method,
 			Map<String, Object> parameter) {
 		this.host = host;
 		this.port = port;
@@ -46,15 +42,15 @@ public class Call implements Serializable {
 		this.parameter = parameter;
 	}
 
-	public Call(Handle providerId, Handle serviceId, String method) {
+	public Call(String providerId, String serviceId, String method) {
 		this(null, -1, null, providerId, serviceId, method, new HashMap<>());
 	}
 
-	public Call(Handle serviceId, String method) {
+	public Call(String serviceId, String method) {
 		this(null, -1, null, null, serviceId, method, new HashMap<>());
 	}
 
-	public Call(Handle provider, Handle serviceId, String method, Map<String, Object> parameter) {
+	public Call(String provider, String serviceId, String method, Map<String, Object> parameter) {
 		this(null, -1, null, provider, serviceId, method, parameter);
 	}
 
@@ -101,11 +97,11 @@ public class Call implements Serializable {
 		this.port = port;
 	}
 
-	public Handle getService() {
+	public String getService() {
 		return this.service;
 	}
 
-	public Handle getProvider() {
+	public String getProvider() {
 		return this.provider;
 	}
 
@@ -117,11 +113,11 @@ public class Call implements Serializable {
 		return this.port;
 	}
 
-	public void setService(Handle service) {
+	public void setService(String service) {
 		this.service = service;
 	}
 
-	public void setProvider(Handle provider) {
+	public void setProvider(String provider) {
 		this.provider = provider;
 	}
 
@@ -131,20 +127,5 @@ public class Call implements Serializable {
 
 	public void setParameter(Map<String, Object> parameter) {
 		this.parameter = parameter;
-	}
-	
-	public static void main(String[] args) throws CoreException {
-		String str="{\r\n"
-				+ "	@type=de.core.service.Call\r\n"
-				+ "	service=tischlampe\r\n"
-				+ "	provider=devices\r\n"
-				+ "	method=toggle\r\n"
-				+ "}\r\n"
-				+ "";
-
-		Call c1=Coding.decode(str);
-		Call c=new Call(new NameHandle("devices"), new NameHandle("tischlampe"), "toggle");
-		System.out.println(new String(Coding.encode(c)));
-		
 	}
 }

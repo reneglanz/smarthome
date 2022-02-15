@@ -1,8 +1,6 @@
 package de.shd.alexa.skill.smarthome.handler;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.shd.alexa.skill.smarthome.model.Context;
 import de.shd.alexa.skill.smarthome.model.Endpoint;
 import de.shd.alexa.skill.smarthome.model.Event;
@@ -21,7 +19,7 @@ public class PowerController extends AbstractHandler {
     Header header = request.getDirective().getHeader();
     Endpoint endpoint = request.getDirective().getEndpoint();
     try {
-      AbstractDevice abstractDevice = getDeviceStore().getService((Handle)new NameHandle(endpoint.getEndpointId()));
+      AbstractDevice abstractDevice = getDeviceStore().getService(endpoint.getEndpointId());
       if (abstractDevice instanceof Switch) {
         if ("TurnOn".equals(header.getName())) {
           ((Switch)abstractDevice).setState(Switch.State.ON);
@@ -42,3 +40,4 @@ public class PowerController extends AbstractHandler {
     return null;
   }
 }
+

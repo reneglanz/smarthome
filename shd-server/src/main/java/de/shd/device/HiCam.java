@@ -1,30 +1,21 @@
 package de.shd.device;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.core.CoreException;
-import de.core.Env;
 import de.core.ftp.IFtpFileHandler;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.http.Http;
 import de.core.http.HttpResponse;
 import de.core.rt.Launchable;
 import de.core.rt.Releasable;
-import de.core.serialize.Coding;
 import de.core.serialize.annotation.Element;
-import de.core.service.Function;
 import de.core.service.ServiceProvider;
 import de.core.service.Services;
 import de.core.utils.Streams;
-import de.shd.device.data.ImageData;
 import de.shd.device.data.SwitchData;
 import de.shd.device.data.TaskData;
 
@@ -44,14 +35,12 @@ public class HiCam extends Camera implements Switch, Launchable, IFtpFileHandler
 			try {
 			ServiceProvider<?> provider=Services.getProvider(this);
 			if(provider!=null) {
-				Handle h=provider.getProviderId();
-				if(h instanceof NameHandle) {
-					taskUrn=h.toString()+":"+getDeviceHandle().toString()+":getImage";
-				}
+				String h=provider.getProviderId();
+				taskUrn=h+":"+getDeviceId()+":getImage";
 			}
 			} catch(Throwable t) {};
 		}
-		return new ExportData(getDeviceHandle(), name, new SwitchData(this.state), new TaskData(imageRefreshRate, taskUrn));
+		return new ExportData(getDeviceId(), name, new SwitchData(this.state), new TaskData(imageRefreshRate, taskUrn));
 	}
 
 	public Switch.State toggle() throws CoreException {

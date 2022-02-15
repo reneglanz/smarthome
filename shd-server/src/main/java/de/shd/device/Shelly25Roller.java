@@ -77,7 +77,7 @@ public class Shelly25Roller extends MqttDevice implements Shutter {
 		} else {
 			txtData = new TextData("bitte warten");
 		}
-		return new ExportData(getDeviceHandle(), name, txtData);
+		return new ExportData(getDeviceId(), name, txtData);
 	}
 
 	public void open() throws CoreException {

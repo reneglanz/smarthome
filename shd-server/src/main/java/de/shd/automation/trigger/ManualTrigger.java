@@ -2,7 +2,6 @@ package de.shd.automation.trigger;
 
 import de.core.CoreException;
 import de.core.data.Data;
-import de.core.handle.Handle;
 import de.core.rt.Launchable;
 import de.core.serialize.annotation.Element;
 import de.core.service.Service;
@@ -14,11 +13,8 @@ import de.shd.device.Toggle;
 import de.shd.device.data.TextData;
 
 public class ManualTrigger extends AbstractTrigger implements Launchable {
-  @Element
-  protected Handle provider = null;
-  
-  @Element
-  protected boolean discoverable;
+  @Element protected String provider = null;
+  @Element protected boolean discoverable;
   
   public class ManualTriggerDevice extends AbstractDevice implements Toggle {
     protected ManualTriggerDevice setId(String automationId) {
@@ -28,7 +24,7 @@ public class ManualTrigger extends AbstractTrigger implements Launchable {
     }
     
     public ExportData createExportData() {
-      return new ExportData(getDeviceHandle(), name, (Data)new TextData(""));
+      return new ExportData(getDeviceId(), name, (Data)new TextData(""));
     }
     
     public Switch.State toggle() {

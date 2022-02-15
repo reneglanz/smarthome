@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,12 @@ public class Http {
 			return httpGet.send(null);
 		}
 	}
+	
+	public static HttpResponse delete(String url, Map<String, String> header) throws Exception {
+		try (HttpRequest httpGet = new HttpRequest("DELETE", url, header)) {
+			return httpGet.send(null);
+		}
+	}
 
 	public static HttpResponse post0(String url, Map<String, String> header, InputStream data) throws Exception {
 		try (HttpRequest request = new HttpRequest("POST", url, header)) {
@@ -92,5 +99,9 @@ public class Http {
 	public static byte[] post(String url, Map<String, String> header, byte[] data) throws Exception {
 		HttpResponse r=post0(url, header, (data == null) ? null : new ByteArrayInputStream(data));
 		return Streams.readAll(r.getContent());
+	}
+	
+	public static String buildUrl(String... token) {
+		return Arrays.stream(token).collect(Collectors.joining("/"));
 	}
 }

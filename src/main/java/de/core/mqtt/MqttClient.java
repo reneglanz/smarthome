@@ -2,6 +2,7 @@ package de.core.mqtt;
 
 import de.core.CoreException;
 import de.core.Env;
+import de.core.log.ConsoleAppender;
 import de.core.log.Logger;
 import de.core.rt.Launchable;
 import de.core.rt.Releasable;
@@ -17,6 +18,7 @@ import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 @Injectable
@@ -46,7 +48,6 @@ public class MqttClient implements Serializable, Launchable, Resource, Releasabl
 			while (!MqttClient.this.client.isConnected()) {
 				try {
 					MqttClient.this.client.connect(this.options);
-					sleep(10000L);
 				} catch (Throwable t) {
 					MqttClient.this.logger.error("Failed to connect to " + MqttClient.this.client.getServerURI());
 					try {
@@ -91,7 +92,7 @@ public class MqttClient implements Serializable, Launchable, Resource, Releasabl
 
 	public void subscribe(MqttSubscriber subscriber) throws CoreException {
 		try {
-			if (this.client != null) {
+			if (this.client != null&&this.client.isConnected()) {
 				this.client.subscribe(subscriber.topic, subscriber.qos, subscriber);
 				this.logger.info("Subscribed to " + subscriber.topic);
 			} else {
@@ -128,9 +129,9 @@ public class MqttClient implements Serializable, Launchable, Resource, Releasabl
 		try {
 			String url = ((this.factory != null) ? "ssl" : "tcp") + "://" + this.host + ":" + this.port;
 			this.client = (IMqttClient) new org.eclipse.paho.client.mqttv3.MqttClient(url, this.clientId,
-					new MqttDefaultFilePersistence(Env.get("install.dir")+"/data"));
+					new MemoryPersistence());
 			MqttConnectOptions options = new MqttConnectOptions();
-			options.setCleanSession(true);
+			options.setCleanSession(false);
 			options.setConnectionTimeout(10);
 			options.setAutomaticReconnect(true);
 			options.setCleanSession(this.cleanSession);
@@ -150,7 +151,26 @@ public class MqttClient implements Serializable, Launchable, Resource, Releasabl
 				throw CoreException.throwCoreException(e);
 			}
 	}
-
-	protected MqttClient() {
+	
+	public boolean isConnected() {
+		return client!=null?client.isConnected():false;
 	}
+
+	protected MqttClient() {}
+	
+	public static void main(String[] args) throws CoreException, InterruptedException {
+		Env.put("install.dir", "/opt/unifiedserver");
+		MqttClient c=new MqttClient(args[0], 1883, args[1]);
+		c.logger.setRootLogLevel(2);
+		c.logger.appender.add(new ConsoleAppender());
+		c.launch();
+		while(!c.isConnected()) {
+			Thread.sleep(200);
+		}
+		for(int i=0;i<100;i++) {
+			c.publish("test", "test".getBytes());
+		}
+		c.release();
+	}
+	
 }

@@ -1,5 +1,7 @@
 package de.shd.alexa.skill.smarthome;
 
+import java.util.HashMap;
+
 import de.core.CoreException;
 import de.core.http.HttpHeader;
 import de.core.http.HttpRequest;
@@ -19,7 +21,6 @@ import de.shd.alexa.skill.smarthome.handler.RangeController;
 import de.shd.alexa.skill.smarthome.handler.StateReportHandler;
 import de.shd.alexa.skill.smarthome.model.Request;
 import de.shd.alexa.skill.smarthome.model.Response;
-import java.util.HashMap;
 
 public class AlexaSmartHomeRequestHandler extends AbstractHttpRequestHandler {
   private static HashMap<String, Handler> handler = new HashMap<>();
@@ -33,7 +34,7 @@ public class AlexaSmartHomeRequestHandler extends AbstractHttpRequestHandler {
     handler.put("Alexa.ColorTemperatureController", new ColorTempratureController());
     handler.put("Alexa.RangeController", new RangeController());
   }
-  
+ 
   public HttpResponse handleRequest(HttpRequest request) {
     try {
       Request alexarequest = (Request)Coding.decode(request.getIs(), "json", Request.class);
@@ -51,7 +52,7 @@ public class AlexaSmartHomeRequestHandler extends AbstractHttpRequestHandler {
     } catch (Exception e) {
       e.printStackTrace();
     } 
-    return (HttpResponse)new FixedLengthHttpResponse("ich weiß nicht was das soll".getBytes());
+    return (HttpResponse)new FixedLengthHttpResponse("ich weiï¿½ nicht was das soll".getBytes());
   }
   
   public boolean canHandleRequest(HttpRequest request) {

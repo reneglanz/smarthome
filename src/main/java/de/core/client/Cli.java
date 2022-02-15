@@ -1,8 +1,6 @@
 package de.core.client;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.rt.Scope;
 import de.core.serialize.Coding;
 import de.core.service.Call;
@@ -91,9 +89,9 @@ public class Cli {
         Scope.setHost("localhost:7000");
       } 
     } 
-    Call call = new Call((Handle)new NameHandle(serviceid), method);
+    Call call = new Call(serviceid, method);
     if (providerid != null)
-      call.setProvider((Handle)new NameHandle(providerid)); 
+      call.setProvider(providerid); 
     call.setParameter(params);
     Object response = Services.invoke(call);
     byte[] output = null;

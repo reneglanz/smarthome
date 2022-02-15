@@ -1,10 +1,13 @@
 package de.shd.device;
 
+import java.awt.SystemColor;
+
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import de.core.CoreException;
 import de.core.Env;
 import de.core.data.Data;
+import de.core.log.Logger;
 import de.core.mqtt.MqttClient;
 import de.core.mqtt.MqttSubscriber;
 import de.core.rt.Launchable;
@@ -24,6 +27,8 @@ public abstract class MqttDevice extends AbstractDevice implements Launchable, R
 
 	MqttSubscriber subscriber;
 	TextData exportData;
+	
+	public static final Logger logger=Logger.createLogger("MqttDevice");
 
 	public void launch() throws CoreException {
 		if (this.store != null) {
@@ -78,10 +83,19 @@ public abstract class MqttDevice extends AbstractDevice implements Launchable, R
 	}
 
 	public ExportData createExportData() {
-		return new ExportData(getDeviceHandle(), name, (Data) this.exportData);
+		return new ExportData(getDeviceId(), name, (Data) this.exportData);
 	}
 
 	public void mqttPublish(String publishTopic, String msg) throws CoreException {
 		mqttClient.publish(publishTopic, msg.getBytes());
+	}
+	
+	public static void main(String[] args) throws CoreException, InterruptedException {
+		MqttClient mqtt=new MqttClient("192.168.178.2", 1883, "xx");
+		mqtt.launch();
+		Thread.sleep(2000);
+		long start=System.currentTimeMillis();
+		mqtt.publish("test", "hallo".getBytes());
+		System.out.println(System.currentTimeMillis()-start);
 	}
 }

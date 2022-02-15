@@ -1,8 +1,6 @@
 package de.shd.update;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.serialize.Serializable;
 import de.core.service.Call;
 import de.core.service.Function;
@@ -18,7 +16,7 @@ public interface UpdateService extends Service {
   }
 	
   @Function default void update(@Param("data") ExportData data) throws CoreException {
-    Services.invoke((new Call((Handle)new NameHandle(getClass().getName()), "update")).addParameter("data", data));
+    Services.invoke((new Call(getClass().getName(), "update")).addParameter("data", data));
   }
   
   @Function void register(UpdateListener listener) throws CoreException;

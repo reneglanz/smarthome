@@ -109,7 +109,7 @@ public class ShellyDuo extends MqttSwitchDevice implements Light {
   }
   
   public ExportData createExportData() {
-    return new ExportData(getDeviceHandle(), name, this.data);
+    return new ExportData(getDeviceId(), name, this.data);
   }
   
   public boolean canDim() throws CoreException {

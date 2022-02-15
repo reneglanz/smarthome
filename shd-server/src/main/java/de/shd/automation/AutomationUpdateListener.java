@@ -1,7 +1,6 @@
 package de.shd.automation;
 
 import de.core.CoreException;
-import de.core.handle.NameHandle;
 import de.core.serialize.annotation.Injectable;
 import de.shd.automation.trigger.AbstractTrigger;
 import de.shd.automation.trigger.DeviceTrigger;
@@ -19,7 +18,7 @@ public class AutomationUpdateListener implements UpdateService.UpdateListener {
 			for(Automation automation:store.automations) {
 				for(AbstractTrigger trigger:automation.trigger) {
 					if(trigger instanceof DeviceTrigger
-					   &&((NameHandle)(exportData).getDeviceHandle()).toString().equals(((DeviceTrigger) trigger).getDeviceId().toString())) {
+					   &&exportData.getDeviceHandle().equals(((DeviceTrigger) trigger).getDeviceId())) {
 						trigger.runAutomation();
 						break;
 					}

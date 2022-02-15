@@ -1,8 +1,8 @@
 package de.shd.alexa.skill.smarthome.handler;
 
+import java.util.ArrayList;
+
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.log.Logger;
 import de.core.serialize.annotation.Injectable;
 import de.core.service.Function;
@@ -20,8 +20,6 @@ import de.shd.device.DeviceProvider;
 import de.shd.device.Light;
 import de.shd.device.Range;
 
-import java.util.ArrayList;
-
 public class DiscoverHandler extends AbstractHandler implements Service {
   @Injectable
   DeviceProvider deviceStore;
@@ -36,7 +34,7 @@ public class DiscoverHandler extends AbstractHandler implements Service {
         if (device.isDiscoverable()) {
           Endpoint endpoint = new Endpoint();
           endpoint.setEndpointId(device.getServiceHandle().toString());
-          endpoint.setFriendlyName(device.getName());
+          endpoint.setFriendlyName(device.getAlexaName()!=null?device.getAlexaName():device.getName());
           endpoint.setDescription(device.getName());
           ArrayList<Capability> capabillities = new ArrayList<>();
           capabillities.add(Capability.Factory.createAlexa());
@@ -73,8 +71,8 @@ public class DiscoverHandler extends AbstractHandler implements Service {
     return new Response(new Event(header, (EventPayload)new DiscoverPayload(endpoints.<Endpoint>toArray(new Endpoint[endpoints.size()]))));
   }
   
-  public Handle getServiceHandle() {
-    return (Handle)new NameHandle("Alexa.Discover");
+  public String getServiceHandle() {
+    return "Alexa.Discover";
   }
   
   @Function

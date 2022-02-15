@@ -1,17 +1,15 @@
 package de.shd.alexa.skill.custom.handler;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.service.Services;
 import de.shd.alexa.skill.custom.AlexaRequest;
 import de.shd.alexa.skill.custom.AlexaResponse;
 import de.shd.device.Light;
 
 public class SetBrightnessIntentHandler implements IntentHandler {
-  protected NameHandle provider;
+  protected String provider;
   
-  public SetBrightnessIntentHandler(NameHandle provider) {
+  public SetBrightnessIntentHandler(String provider) {
     this.provider = provider;
   }
   
@@ -19,7 +17,7 @@ public class SetBrightnessIntentHandler implements IntentHandler {
     String deviceName = request.getSlot("device", null);
     String value = request.getSlot("brightness", null);
     if (deviceName != null) {
-      Light light = (Light)Services.get((Handle)this.provider, (Handle)new NameHandle(deviceName), Light.class);
+      Light light = (Light)Services.get(this.provider, deviceName, Light.class);
       if (light != null) {
         if (light.canDim()) {
           int dim = 30;

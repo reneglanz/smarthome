@@ -1,8 +1,6 @@
 package de.shd.automation.action;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.serialize.annotation.Element;
 import de.core.service.Service;
 import de.core.service.ServiceProvider;
@@ -14,10 +12,10 @@ public class ShutterOpenAction implements Action {
 
 
 	@Element(inline = true)
-	protected NameHandle provider = null;
+	protected String provider = null;
   
 	@Element(inline = true)
-	protected NameHandle service = null;
+	protected String service = null;
 	
 	private Shutter shutter0;
 	
@@ -29,10 +27,10 @@ public class ShutterOpenAction implements Action {
 
 	protected Shutter getShutter() {
 		if(shutter0==null) {
-	      ServiceProvider<? extends Service> serviceprovider = Services.getProvider((Handle)this.provider);
+	      ServiceProvider<? extends Service> serviceprovider = Services.getProvider(this.provider);
 	      if (serviceprovider != null) {
 	        try {
-	          Service service0 = serviceprovider.getService((Handle)this.service);
+	          Service service0 = serviceprovider.getService(this.service);
 	          if (service0 != null && service0 instanceof Shutter) {
 	            this.shutter0 = (Shutter)service0;
 	          } else {

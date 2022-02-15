@@ -91,7 +91,7 @@ public class ValveControler extends MqttDevice {
 
 		@Override
 		public ExportData createExportData() {
-			return new ExportData(this.getDeviceHandle(), name, exportData);
+			return new ExportData(this.getDeviceId(), name, exportData);
 		}
 		
 		private void publish(Cmd cmd) throws CoreException {

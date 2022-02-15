@@ -10,8 +10,6 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.rt.Launchable;
 import de.core.serialize.Coding;
 import de.core.serialize.annotation.Element;
@@ -101,8 +99,8 @@ public class ResourceServiceImpl implements Launchable, ResourceService {
 	}
 	
 	@Override
-	public Handle getServiceHandle() {
-		return new NameHandle(id);
+	public String getServiceHandle() {
+		return id;
 	}
 
 	@Override

@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.rt.Launchable;
 import de.core.serialize.annotation.Element;
 import de.core.service.Service;
@@ -23,9 +21,9 @@ public class ContainerDevice extends AbstractDevice
 		DYNAMIC
 	}
 	
-	@Element(inline=true) NameHandle leader;
-	@Element List<NameHandle> follower; 
-	@Element(inline=true,inlineClasses={NameHandle.class})   Handle serviceProvider;
+	@Element String leader;
+	@Element List<String> follower; 
+	@Element String serviceProvider;
 	@Element String[] services;
 	@Element(defaultValue="LEADER") FollowMode followMode=FollowMode.LEADER;
 	
@@ -60,7 +58,7 @@ public class ContainerDevice extends AbstractDevice
 				}
 			});
 		} else {
-			CoreException.throwCoreException("["+this.getDeviceHandle()+"]"+"Leader not found " + leader);
+			CoreException.throwCoreException("["+this.getDeviceId()+"]"+"Leader not found " + leader);
 		}
 	}
 
@@ -276,10 +274,10 @@ public class ContainerDevice extends AbstractDevice
 			this.updateService.update(data);
 			if(followMode==FollowMode.LEADER) {
 				if(data.device.equals(this.leader)) {
-					this.updateService.update(new ExportData(getDeviceHandle(), this.name, data.data));
+					this.updateService.update(new ExportData(getDeviceId(), this.name, data.data));
 				}
 			} else if(followMode==FollowMode.DYNAMIC) {
-				this.updateService.update(new ExportData(getDeviceHandle(), this.name, new SwitchData(this.getState())));
+				this.updateService.update(new ExportData(getDeviceId(), this.name, new SwitchData(this.getState())));
 			}
 		}
 	}

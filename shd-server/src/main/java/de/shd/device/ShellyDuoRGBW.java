@@ -6,7 +6,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import de.core.CoreException;
 import de.core.Env;
-import de.core.data.Data;
 import de.core.mqtt.MqttSubscriber;
 import de.core.serialize.Coding;
 import de.core.serialize.Serializable;
@@ -181,7 +180,7 @@ public class ShellyDuoRGBW extends MqttSwitchDevice implements Light {
   }
   
   public ExportData createExportData() {
-    return new ExportData(getDeviceHandle(), name,new SwitchData(this.state), new BrightnessData(this.data.brightness));
+    return new ExportData(getDeviceId(), name,new SwitchData(this.state), new BrightnessData(this.data.brightness));
   }
   
   public Light.Color getColor() throws CoreException {

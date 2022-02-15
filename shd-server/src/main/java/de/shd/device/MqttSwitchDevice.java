@@ -74,7 +74,7 @@ public class MqttSwitchDevice extends MqttDevice implements Switch {
 	}
 
 	public ExportData createExportData() {
-		return new ExportData(getDeviceHandle(), name, (Data) new SwitchData(this.state));
+		return new ExportData(getDeviceId(), name, (Data) new SwitchData(this.state));
 	}
 
 	public Switch.State getState() throws CoreException {

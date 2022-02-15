@@ -9,8 +9,6 @@ import java.util.List;
 
 import de.core.CoreException;
 import de.core.Env;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.rt.Launchable;
 import de.core.rt.Releasable;
 import de.core.rt.Reloadable;
@@ -65,28 +63,25 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 		load();
 	}
 
-	public NameHandle getServiceHandle() {
-		return new NameHandle("automationstore");
+	public String getServiceHandle() {
+		return "automationstore";
 	}
 
 	@Override
-	public List<Handle> list() throws CoreException {
-		ArrayList<Handle> handle=new ArrayList<>();
+	public List<String> list() throws CoreException {
+		ArrayList<String> handle=new ArrayList<>();
 		automations.forEach(a->{
-			handle.add(new NameHandle(a.getId()));
+			handle.add(a.getId());
 		});
 		return handle;
 	}
 
 	@Override
-	public String get(Handle handle) throws CoreException {
+	public String get(String handle) throws CoreException {
 		try {
-			if(handle instanceof NameHandle) {
-				NameHandle name=(NameHandle) handle;
-				for(Automation a: automations) {
-					if(a.getId().equals(name.toString())){
-						return Coding.toBase64(Coding.encode(a));
-					}
+			for(Automation a: automations) {
+				if(a.getId().equals(handle)){
+					return Coding.toBase64(Coding.encode(a));
 				}
 			}
 		} catch (Throwable t) {

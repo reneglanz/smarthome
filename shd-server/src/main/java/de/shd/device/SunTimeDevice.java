@@ -31,7 +31,7 @@ public class SunTimeDevice extends AbstractDevice implements Sensor, Launchable 
   
   public ExportData createExportData() {
     Calendar[] times = SunriseSunset.getSunriseSunset(new GregorianCalendar(), this.latitude, this.longitude);
-    return new ExportData(getDeviceHandle(), name, new SunTimeData(times[0].getTimeInMillis(), times[1].getTimeInMillis()));
+    return new ExportData(getDeviceId(), name, new SunTimeData(times[0].getTimeInMillis(), times[1].getTimeInMillis()));
   }
   
   public void launch() throws CoreException {

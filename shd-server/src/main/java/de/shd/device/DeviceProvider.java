@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.serialize.Coding;
 import de.core.service.LocalServiceProvider;
-import de.core.utils.Levenshtein;
 import de.shd.ui.Editable;
 
 public class DeviceProvider extends LocalServiceProvider<AbstractDevice> implements Iterable<AbstractDevice>,Editable {
@@ -23,32 +20,13 @@ public class DeviceProvider extends LocalServiceProvider<AbstractDevice> impleme
 		return null;
 	}
 
-	public AbstractDevice get(String name) throws CoreException {
-		return get(name, true);
-	}
-
-	public AbstractDevice bestMatch(String name) throws CoreException {
-		AbstractDevice device = get(name, false);
-		if (device == null) {
-			int best = Integer.MAX_VALUE;
-			for (AbstractDevice d : this) {
-				int tmp = Levenshtein.compare(name, d.name).intValue();
-				if (tmp < best) {
-					best = tmp;
-					device = d;
-				}
-			}
-		}
-		return device;
-	}
-
-	public AbstractDevice getService(Handle id) throws CoreException {
+	public AbstractDevice getService(String id) throws CoreException {
 		return (AbstractDevice) super.getService(id);
 	}
 
 	public Iterator<AbstractDevice> iterator() {
 		return new Iterator<AbstractDevice>() {
-			Iterator<Map.Entry<Handle, AbstractDevice>> it = DeviceProvider.this.services.entrySet().iterator();
+			Iterator<Map.Entry<String, AbstractDevice>> it = DeviceProvider.this.services.entrySet().iterator();
 
 			public AbstractDevice next() {
 				return (AbstractDevice) ((Map.Entry) this.it.next()).getValue();
@@ -60,21 +38,21 @@ public class DeviceProvider extends LocalServiceProvider<AbstractDevice> impleme
 		};
 	}
 
-	public Handle getServiceHandle() {
-		return (Handle) this.providerId;
+	public String getServiceHandle() {
+		return this.providerId;
 	}
 
 	@Override
-	public List<Handle> list() throws CoreException {
-		ArrayList<Handle>list=new ArrayList<>();
-		this.forEach(device->{list.add(new NameHandle(device.name));});
+	public List<String> list() throws CoreException {
+		ArrayList<String>list=new ArrayList<>();
+		this.forEach(device->{list.add(device.name);});
 		return list;
 	}
 
 	@Override
-	public String get(Handle handle) throws CoreException {
+	public String get(String handle) throws CoreException {
 		for(AbstractDevice device:this) {
-			if(handle instanceof NameHandle && device.getName().equals(((NameHandle)handle).toString())) {
+			if(device.getName().equals(handle)) {
 				return Coding.toBase64(Coding.encode(device));
 			}
 		}

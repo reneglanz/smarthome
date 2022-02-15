@@ -17,7 +17,7 @@ public class MailPrinter extends AbstractDevice {
 	
 	@Override
 	public ExportData createExportData() {
-		return new ExportData(getDeviceHandle(), name, new TextData(""));
+		return new ExportData(getDeviceId(), name, new TextData(""));
 	}
 
 	public static void main(String[] args) {

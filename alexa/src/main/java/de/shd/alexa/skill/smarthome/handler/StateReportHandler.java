@@ -1,8 +1,8 @@
 package de.shd.alexa.skill.smarthome.handler;
 
+import java.util.ArrayList;
+
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.shd.alexa.skill.smarthome.model.ColorHSB;
 import de.shd.alexa.skill.smarthome.model.Context;
 import de.shd.alexa.skill.smarthome.model.Endpoint;
@@ -15,14 +15,13 @@ import de.shd.device.AbstractDevice;
 import de.shd.device.Light;
 import de.shd.device.Range;
 import de.shd.device.Switch;
-import java.util.ArrayList;
 
 public class StateReportHandler extends AbstractHandler {
 	public Response handle(Request request) {
 		Endpoint endpoint = request.getDirective().getEndpoint();
 		Header header = request.getDirective().getHeader();
 		try {
-			AbstractDevice device = getDeviceStore().getService((Handle) new NameHandle(endpoint.getEndpointId()));
+			AbstractDevice device = getDeviceStore().getService(endpoint.getEndpointId());
 			header.setName("StateReport");
 			Event event = new Event(header, endpoint);
 			ArrayList<Properties> props = new ArrayList<>();

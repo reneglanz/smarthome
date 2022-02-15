@@ -4,7 +4,7 @@ plugins {
  }
 
 dependencies {
-	implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+	implementation group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.0'
 	implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 	compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.28.0'
 	compile('org.apache.ftpserver:ftpserver-core:1.0.6')
@@ -14,6 +14,7 @@ dependencies {
 allprojects {
     repositories {
         jcenter() 
+        mavenCentral()
     }
     
 	task deploy()  {

@@ -1,14 +1,11 @@
 package de.shd.device;
 
 import de.core.CoreException;
-import de.core.handle.Handle;
-import de.core.handle.NameHandle;
 import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Element;
 import de.core.service.Castable;
 import de.core.service.Service;
 import de.core.service.Services;
-import de.shd.device.data.TextData;
 import de.shd.update.UpdateService;
 
 public abstract class AbstractDevice implements Service, Serializable, Castable {
@@ -16,6 +13,7 @@ public abstract class AbstractDevice implements Service, Serializable, Castable 
 	@Element protected String name;
 	@Element(defaultValue = "false") protected boolean discoverable = false;
 	@Element protected String alexaType;
+	@Element protected String alexaName;
 	
 	protected UpdateService updateService;
 
@@ -30,8 +28,8 @@ public abstract class AbstractDevice implements Service, Serializable, Castable 
 		return this.name;
 	}
 
-	public Handle getDeviceHandle() {
-		return new NameHandle(this.id);
+	public String getDeviceId() {
+		return this.id;
 	}
 
 	public abstract ExportData createExportData();
@@ -50,8 +48,8 @@ public abstract class AbstractDevice implements Service, Serializable, Castable 
 		this.updateService = updateService;
 	}
 
-	public Handle getServiceHandle() {
-		return (Handle) new NameHandle(this.id);
+	public String getServiceHandle() {
+		return this.id;
 	}
 
 	public boolean isDiscoverable() {
@@ -60,6 +58,10 @@ public abstract class AbstractDevice implements Service, Serializable, Castable 
 
 	public String getAlexaType(String default0) {
 		return alexaType!=null?alexaType:default0;
+	}
+
+	public String getAlexaName() {
+		return alexaName;
 	}
 	
 	
