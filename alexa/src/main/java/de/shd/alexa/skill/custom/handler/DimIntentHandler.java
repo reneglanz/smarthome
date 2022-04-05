@@ -5,7 +5,7 @@ import de.core.service.Services;
 import de.shd.alexa.skill.custom.AlexaRequest;
 import de.shd.alexa.skill.custom.AlexaResponse;
 import de.shd.device.Light;
-import de.shd.device.Switch;
+import de.shd.device.State;
 
 public class DimIntentHandler implements IntentHandler {
   protected String provider;
@@ -26,7 +26,7 @@ public class DimIntentHandler implements IntentHandler {
           if (brightness - dimValueInt > 0) {
             light.setBrightness(brightness - dimValueInt);
           } else {
-            light.setState(Switch.State.OFF);
+            light.setState(State.OFF);
           } 
           return (new AlexaResponse()).speak("Ok");
         } 

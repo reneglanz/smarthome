@@ -10,8 +10,8 @@ import de.shd.device.Shutter;
 
 public class ShutterPositionAction implements Action {
 	
-	@Element(inline = true) protected String provider = null;
-	@Element(inline = true) protected String service = null;
+	@Element protected String provider = null;
+	@Element protected String service = null;
 	@Element(defaultValue="0") protected int pos=0;
 	
 	private Shutter shutter0;

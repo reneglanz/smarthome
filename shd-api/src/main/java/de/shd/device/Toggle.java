@@ -6,5 +6,5 @@ import de.core.service.Service;
 
 public interface Toggle extends Service {
   @Function
-  Switch.State toggle() throws CoreException;
+  State toggle() throws CoreException;
 }

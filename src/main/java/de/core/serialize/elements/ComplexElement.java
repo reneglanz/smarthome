@@ -36,6 +36,16 @@ public class ComplexElement extends Element {
     return null;
   }
   
+  public ComplexElement getComplexChild(String name) {
+	  Element e=getChild(name);
+	  return e!=null&&e instanceof ComplexElement?(ComplexElement)e:null;
+  }
+  
+  public PrimitivElement getPrimitiveChild(String name) {
+	  Element e=getChild(name);
+	  return e!=null&&e instanceof PrimitivElement?(PrimitivElement)e:null;
+  }
+  
   public int getSize() {
     return getChildren().size();
   }

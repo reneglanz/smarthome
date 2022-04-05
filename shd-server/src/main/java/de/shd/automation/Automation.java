@@ -149,4 +149,7 @@ public class Automation implements Serializable, Launchable, Releasable {
 		this.file = file;
 	}
 
+	public String toString() {
+		return id;
+	}
 }

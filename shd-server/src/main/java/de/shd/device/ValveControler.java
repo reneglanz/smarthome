@@ -13,7 +13,6 @@ import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Element;
 import de.core.service.ServiceProvider;
 import de.core.service.Services;
-import de.shd.device.Switch.State;
 import de.shd.update.UpdateService;
 
 public class ValveControler extends MqttDevice {

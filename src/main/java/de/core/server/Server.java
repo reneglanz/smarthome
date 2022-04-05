@@ -27,14 +27,10 @@ import java.util.function.Consumer;
 public class Server implements Launchable, Serializable, Releasable, Service {
 	private Scheduler scheduler;
 
-	@Element
-	HttpServer http;
-	@Element
-	Proxy proxy;
-	@Element
-	FtpServer ftp;
-	@Element
-	protected String base;
+	@Element HttpServer http;
+	@Element Proxy proxy;
+	@Element FtpServer ftp;
+	@Element protected String base;
 	@Element(defaultValue = "0")
 	protected int rootLogLevel;
 

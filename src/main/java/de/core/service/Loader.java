@@ -35,7 +35,7 @@ public class Loader<E> {
     DirectoryStream<Path> dirstream = Files.newDirectoryStream(this.dir, (DirectoryStream.Filter<? super Path>)this.filter);
     dirstream.forEach(p -> {
           try {
-            Object loaded = Coding.decode(new FileInputStream(p.toFile()), "sjos");
+            Object loaded = Coding.decode(Files.readAllBytes(p), "sjos");
             action.accept(p,loaded);
           } catch (Throwable t) {
             this.logger.error("Failed to load file " + p.toString(), t);

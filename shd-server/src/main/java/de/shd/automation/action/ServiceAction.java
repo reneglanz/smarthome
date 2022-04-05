@@ -10,17 +10,10 @@ import de.core.service.Services;
 import de.shd.automation.Data;
 
 public class ServiceAction implements Action {
-  @Element(inline = true)
-  String provider;
-  
-  @Element(inline = true)
-  String service;
-  
-  @Element
-  String method;
-  
-  @Element
-  protected Map<String, Object> parameter = new HashMap<>();
+  @Element String provider;
+  @Element String service;
+  @Element String method;
+  @Element protected Map<String, Object> parameter = new HashMap<>();
   
   public void execute(Data data) throws CoreException {
     data.getData().putAll(this.parameter);

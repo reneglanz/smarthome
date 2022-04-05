@@ -19,7 +19,7 @@ public class FixedLengthHttpResponse extends HttpResponse {
 		this(content, 200);
 	}
 
-	public int getContentLength() {
+	public long getContentLength() {
 		return content != null ? this.content.length : 0;
 	}
 

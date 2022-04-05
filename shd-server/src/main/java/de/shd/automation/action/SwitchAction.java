@@ -1,13 +1,14 @@
 package de.shd.automation.action;
 
 import de.core.CoreException;
+import de.core.serialize.Coding;
 import de.core.serialize.annotation.Element;
 import de.core.service.Service;
 import de.core.service.ServiceProvider;
 import de.core.service.Services;
 import de.shd.automation.Data;
+import de.shd.device.State;
 import de.shd.device.Switch;
-import de.shd.device.Switch.State;
 import de.shd.ui.Template;
 
 public class SwitchAction implements Action, Template {
@@ -15,32 +16,25 @@ public class SwitchAction implements Action, Template {
 		private NotFound() {
 		}
 
-		public Switch.State toggle() throws CoreException {
-			return Switch.State.UNKNOWN;
+		public State toggle() throws CoreException {
+			return State.UNKNOWN;
 		}
 
-		public Switch.State getState() throws CoreException {
-			return Switch.State.UNKNOWN;
+		public State getState() throws CoreException {
+			return State.UNKNOWN;
 		}
 
-		public Switch.State setState(Switch.State state) throws CoreException {
-			return Switch.State.UNKNOWN;
+		public State setState(State state) throws CoreException {
+			return State.UNKNOWN;
 		}
 	}
 
 	private static NotFound NOT_FOUND = new NotFound();
 
-	@Element(inline = true)
-	protected String provider = null;
-
-	@Element(inline = true)
-	protected String service = null;
-
-	@Element
-	protected Switch.State state;
-
-	@Element
-	protected String key;
+	@Element protected String provider = null;
+	@Element protected String service = null;
+	@Element protected State state;
+	@Element protected String key;
 
 	protected Switch switch0;
 
@@ -82,6 +76,10 @@ public class SwitchAction implements Action, Template {
 	}
 
 	public static void main(String[] args) throws CoreException {
-		System.out.println(new SwitchAction().tempalte());
+		SwitchAction a=new SwitchAction();
+		a.key="trigger:payload";
+		a.provider="devives";
+		a.service="schriebtisch";
+		System.out.println(new String(Coding.encode(a)));
 	}
 }

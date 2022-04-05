@@ -42,7 +42,7 @@ public class HttpServer implements Serializable {
   }
   
   protected HttpRequestHandler getHttpRequestHandler(HttpRequest request) {
-    for (HttpRequestHandler handler : requestHandler) {
+     for (HttpRequestHandler handler : requestHandler) {
       if (handler.canHandleRequest(request))
         return handler; 
     } 

@@ -9,6 +9,7 @@ import de.shd.alexa.skill.smarthome.model.Properties;
 import de.shd.alexa.skill.smarthome.model.Request;
 import de.shd.alexa.skill.smarthome.model.Response;
 import de.shd.device.AbstractDevice;
+import de.shd.device.State;
 import de.shd.device.Switch;
 
 public class PowerController extends AbstractHandler {
@@ -22,9 +23,9 @@ public class PowerController extends AbstractHandler {
       AbstractDevice abstractDevice = getDeviceStore().getService(endpoint.getEndpointId());
       if (abstractDevice instanceof Switch) {
         if ("TurnOn".equals(header.getName())) {
-          ((Switch)abstractDevice).setState(Switch.State.ON);
+          ((Switch)abstractDevice).setState(State.ON);
         } else {
-          ((Switch)abstractDevice).setState(Switch.State.OFF);
+          ((Switch)abstractDevice).setState(State.OFF);
         } 
         header.setNamespace("Alexa");
         header.setName("Response");

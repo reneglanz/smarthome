@@ -88,4 +88,8 @@ public class Logger {
     logger.entrySet().forEach(e -> ((Logger)e.getValue()).logLevel = level);
     rootLevel = level;
   }
+  
+  public boolean isDebug() {
+	  return logLevel==DEBUG;
+  }
 }

@@ -28,6 +28,7 @@ public class ServiceRequestHandler extends AbstractHttpRequestHandler {
         ByteArrayOutputStream boas = new ByteArrayOutputStream();
         Coding.encode(CallResponse.create(result), boas, type);
         resp = new FixedLengthHttpResponse(boas.toByteArray());
+        resp.setContentType("application/json");
       } else {
         resp = new FixedLengthHttpResponse(new byte[0]);
       } 

@@ -11,11 +11,8 @@ import de.shd.device.Shutter;
 public class ShutterOpenAction implements Action {
 
 
-	@Element(inline = true)
-	protected String provider = null;
-  
-	@Element(inline = true)
-	protected String service = null;
+	@Element protected String provider = null;
+	@Element protected String service = null;
 	
 	private Shutter shutter0;
 	

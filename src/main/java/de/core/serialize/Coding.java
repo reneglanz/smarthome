@@ -120,7 +120,7 @@ public class Coding {
       writer.write(serializer.serialize(object), os, _codingWriter);
     } 
   }
-  
+   
   public static byte[] encode(Object object, String extension) throws CoreException {
     return encode(object, extension, false);
   }

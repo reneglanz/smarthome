@@ -8,7 +8,7 @@ import de.core.service.Service;
 import de.core.service.Services;
 import de.shd.device.AbstractDevice;
 import de.shd.device.ExportData;
-import de.shd.device.Switch;
+import de.shd.device.State;
 import de.shd.device.Toggle;
 import de.shd.device.data.TextData;
 
@@ -27,13 +27,13 @@ public class ManualTrigger extends AbstractTrigger implements Launchable {
       return new ExportData(getDeviceId(), name, (Data)new TextData(""));
     }
     
-    public Switch.State toggle() {
+    public State toggle() {
       try {
         ManualTrigger.this.automation.getData().set(ManualTrigger.this.dataKey(), ManualTrigger.this.data(null));
         ManualTrigger.this.runAutomation();
-        return Switch.State.ON;
+        return State.ON;
       } catch (CoreException e) {
-        return Switch.State.UNKNOWN;
+        return State.UNKNOWN;
       } 
     }
   }

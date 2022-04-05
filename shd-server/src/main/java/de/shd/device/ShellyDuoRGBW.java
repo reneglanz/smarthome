@@ -102,7 +102,7 @@ public class ShellyDuoRGBW extends MqttSwitchDevice implements Light {
         public void messageArrived(String topic, MqttMessage message) throws Exception {
           if (topic.endsWith("/color/0/status")) {
             ShellyDuoRGBW.this.data = (ShellyDuoRGBW.ShellyStatusData)Coding.decode(message.getPayload(), "json", ShellyDuoRGBW.ShellyStatusData.class);
-            ShellyDuoRGBW.this.state = ShellyDuoRGBW.this.data.ison ? Switch.State.ON : Switch.State.OFF;
+            ShellyDuoRGBW.this.state = ShellyDuoRGBW.this.data.ison ? State.ON : State.OFF;
             ShellyDuoRGBW.this.export();
           } 
         }
@@ -128,19 +128,19 @@ public class ShellyDuoRGBW extends MqttSwitchDevice implements Light {
     } 
   }
   
-  public Switch.State toggle() throws CoreException {
+  public State toggle() throws CoreException {
     ShellyStatusData data0 = createData();
-    if (this.state == Switch.State.ON) {
-      this.state = Switch.State.OFF;
+    if (this.state == State.ON) {
+      this.state = State.OFF;
     } else {
-      this.state = Switch.State.ON;
+      this.state = State.ON;
     } 
     data0.turn = this.state.toString().toLowerCase();
     mqttPublish(publishTopic,new String(Coding.encode(data0, "json")));
     return this.state;
   }
   
-  public Switch.State setState(Switch.State state) throws CoreException {
+  public State setState(State state) throws CoreException {
     this.state = state;
     ShellyStatusData data0 = createData();
     data0.turn = state.toString().toLowerCase();

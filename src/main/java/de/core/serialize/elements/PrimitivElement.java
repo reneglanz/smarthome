@@ -113,28 +113,32 @@ public class PrimitivElement extends Element {
       StringBuilder builder = new StringBuilder();
       StringBuilder entityName = new StringBuilder();
       boolean entity = false;
-      for (int i = 0; i < tmp.length(); i++) {
-        if (tmp.charAt(i) == '&') {
-          entity = true;
-        } else if (tmp.charAt(i) == ';' && entity) {
-          if (entityName.length() > 2) {
-            String envValue = (String)Env.get(entityName.toString().substring(0, entityName.length()));
-            if (envValue != null) {
-              builder.append(envValue);
-            } else {
-              CoreException.throwCoreException("Entity [name=" + entityName + "] not defined in this environment");
-            } 
-          } else {
-            CoreException.throwCoreException("Entity not complete for " + this.name + " value[=" + this.value + "]");
-          } 
-          entity = false;
-        } else if (entity) {
-          entityName.append(tmp.charAt(i));
-        } else {
-          builder.append(tmp.charAt(i));
-        } 
-      } 
-      this.resolvedValue = builder.toString()+(entity&&entityName.length()>0?entityName.toString():"");
+      if(tmp.contains("&")&&tmp.contains(";")) {
+	      for (int i = 0; i < tmp.length(); i++) {
+	        if (tmp.charAt(i) == '&') {
+	          entity = true;
+	        } else if (tmp.charAt(i) == ';' && entity) {
+	          if (entityName.length() > 2) {
+	            String envValue = (String)Env.get(entityName.toString().substring(0, entityName.length()));
+	            if (envValue != null) {
+	              builder.append(envValue);
+	            } else {
+	              CoreException.throwCoreException("Entity [name=" + entityName + "] not defined in this environment");
+	            } 
+	          } else {
+	            CoreException.throwCoreException("Entity not complete for " + this.name + " value[=" + this.value + "]");
+	          } 
+	          entity = false;
+	        } else if (entity) {
+	          entityName.append(tmp.charAt(i));
+	        } else {
+	          builder.append(tmp.charAt(i));
+	        } 
+	      } 
+      }
+      String tmp1=builder.toString()+(entity&&entityName.length()>0?entityName.toString():"");
+      tmp1=tmp1.trim();
+   	  this.resolvedValue = tmp1.length()>0?tmp1:null;
     } 
   }
   

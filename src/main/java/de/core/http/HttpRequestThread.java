@@ -9,6 +9,7 @@ import javax.net.ssl.SSLSocket;
 
 import de.core.http.handler.HttpRequestHandler;
 import de.core.log.Logger;
+import de.core.rt.Releasable;
 
 public class HttpRequestThread implements Runnable {
 	Socket socket;
@@ -44,6 +45,9 @@ public class HttpRequestThread implements Runnable {
 					resp.prepareForSend();
 					writeResponse(resp);
 					keepAlive = requestHandler.keepAlive();
+					if(resp instanceof Releasable) {
+						((Releasable) resp).release();
+					}
 				}
 			}
 			this.log.debug("Request handled in " + (System.currentTimeMillis() - start) + "msec");
@@ -60,8 +64,7 @@ public class HttpRequestThread implements Runnable {
 
 	public void writeResponse(HttpResponse resp) throws IOException {
 		OutputStream os = this.socket.getOutputStream();
-		os.write(
-				("HTTP/1.1 " + resp.getStatusCode() + " " + getReasonPhrase(resp.getStatusCode()) + "\r\n").getBytes());
+		os.write(("HTTP/1.1 " + resp.getStatusCode() + " " + getReasonPhrase(resp.getStatusCode()) + "\r\n").getBytes());
 		StringBuilder sb = new StringBuilder();
 		for (HttpHeader header : resp.header) {
 			sb.append(header.getName()).append(": ");
@@ -71,6 +74,11 @@ public class HttpRequestThread implements Runnable {
 		}
 		sb.append("\r\n");
 		os.write(sb.toString().getBytes("UTF-8"));
+		
+		HttpHeader hencoding=resp.getHeader("Transfer-Encoding");
+		if(hencoding!=null&&"chunked".equals(hencoding.value)) {
+			os=new ChunkedOutputStream(os, 16384);
+		}
 		InputStream is = resp.getContent();
 		if (is instanceof java.io.ByteArrayInputStream) {
 			byte[] ba = new byte[is.available()];
@@ -90,6 +98,8 @@ public class HttpRequestThread implements Runnable {
 		case 101:
 			return "Switching Protocols";
 		case 200:
+		case 206:
+		case 304:
 			return "OK";
 		case 404:
 			return "BAD REQUEST";

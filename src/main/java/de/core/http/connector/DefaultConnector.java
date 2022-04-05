@@ -1,11 +1,13 @@
 package de.core.http.connector;
 
 import de.core.CoreException;
+import de.core.Env;
 import de.core.http.HttpRequestThread;
 import de.core.http.HttpServer;
 import de.core.log.Logger;
 import de.core.serialize.annotation.Element;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -30,6 +32,9 @@ public class DefaultConnector implements Connector {
   
   public void run() {
     if (this.httpServer != null) {
+      try {
+    	  Env.put("http.connector."+name,InetAddress.getLocalHost().getHostName()+":"+port);
+      } catch(Throwable t) {}
       boolean createSocket = true;
       ServerSocket serverSocket = null;
       while (!this.stop) {

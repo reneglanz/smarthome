@@ -17,6 +17,10 @@ public abstract class HttpResponse {
     this.header.add(header);
   }
   
+  public void addHeader(String name,String value) {
+	  this.addHeader(new HttpHeader(name, value));
+  }
+  
   public int getStatusCode() {
     return this.statusCode;
   }
@@ -70,7 +74,7 @@ public abstract class HttpResponse {
 	  return false;
   }
   
-  public abstract int getContentLength();
+  public abstract long getContentLength();
   
   public abstract InputStream getContent();
   

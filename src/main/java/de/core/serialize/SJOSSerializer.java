@@ -152,7 +152,8 @@ public class SJOSSerializer {
 	private void serializeField(Object o, ComplexElement root, String name) throws CoreException {
 		if (o.getClass().isPrimitive() || o.getClass().equals(String.class)) {
 			PrimitivElement primitiv = new PrimitivElement((Element) root);
-			primitiv.setName((name != null) ? name : o.toString());
+			//primitiv.setName((name != null) ? name : o.toString());
+			primitiv.setName(name);
 			primitiv.setValue(o.toString());
 			root.add((Element) primitiv);
 		} else if (o instanceof Class) {

@@ -14,23 +14,23 @@ public class MqttSwitchDevice extends MqttDevice implements Switch {
 	@Element
 	Map<String, String> stateMap;
 	@Element(defaultValue = "UNKNOWN")
-	Switch.State state = Switch.State.UNKNOWN;
+	State state = State.UNKNOWN;
 
-	public Switch.State mapState(String external) {
+	public State mapState(String external) {
 		if (this.stateMap != null) {
 			String tmp = this.stateMap.get(external);
 			if (tmp != null)
 				try {
-					return Switch.State.valueOf(tmp);
+					return State.valueOf(tmp);
 				} catch (Throwable t) {
-					return Switch.State.UNKNOWN;
+					return State.UNKNOWN;
 				}
-			return Switch.State.UNKNOWN;
+			return State.UNKNOWN;
 		}
-		return Switch.State.valueOf(external);
+		return State.valueOf(external);
 	}
 
-	public String mapState(Switch.State state) {
+	public String mapState(State state) {
 		if (this.stateMap != null)
 			for (Map.Entry<String, String> entry : this.stateMap.entrySet()) {
 				if (((String) entry.getValue()).equals(state.toString()))
@@ -58,12 +58,12 @@ public class MqttSwitchDevice extends MqttDevice implements Switch {
 		}
 	}
 
-	public Switch.State toggle() throws CoreException {
+	public State toggle() throws CoreException {
 		try {
-			if (this.state == Switch.State.ON) {
-				this.state = Switch.State.OFF;
+			if (this.state == State.ON) {
+				this.state = State.OFF;
 			} else {
-				this.state = Switch.State.ON;
+				this.state = State.ON;
 			}
 			mqttPublish(publishTopic, mapState(this.state));
 			export();
@@ -77,11 +77,11 @@ public class MqttSwitchDevice extends MqttDevice implements Switch {
 		return new ExportData(getDeviceId(), name, (Data) new SwitchData(this.state));
 	}
 
-	public Switch.State getState() throws CoreException {
+	public State getState() throws CoreException {
 		return this.state;
 	}
 
-	public Switch.State setState(Switch.State state) throws CoreException {
+	public State setState(State state) throws CoreException {
 		if (this.state == state)
 			return state;
 		this.state = state;

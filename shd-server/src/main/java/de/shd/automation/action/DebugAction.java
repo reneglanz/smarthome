@@ -7,8 +7,7 @@ import de.core.serialize.annotation.Element;
 import de.shd.automation.Data;
 
 public class DebugAction implements Action {
-  @Element
-  String loggerName;
+  @Element String loggerName;
   
   protected DebugAction() {}
   

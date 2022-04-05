@@ -57,19 +57,19 @@ public class ShellyDuo extends MqttSwitchDevice implements Light {
     mqttPublish(publishTopic,new String(Coding.encode(data0, "json")));
   }
   
-  public Switch.State toggle() throws CoreException {
+  public State toggle() throws CoreException {
     Data data0 = createData();
-    if (this.state == Switch.State.ON) {
-      this.state = Switch.State.OFF;
+    if (this.state == State.ON) {
+      this.state = State.OFF;
     } else {
-      this.state = Switch.State.ON;
+      this.state = State.ON;
     } 
     data0.turn = mapState(this.state);
     mqttPublish(publishTopic,new String(Coding.encode(data0, "json")));
     return this.state;
   }
   
-  public Switch.State setState(Switch.State state) throws CoreException {
+  public State setState(State state) throws CoreException {
     this.state = state;
     Data data0 = createData();
     data0.turn = mapState(state);
@@ -91,7 +91,7 @@ public class ShellyDuo extends MqttSwitchDevice implements Light {
         public void messageArrived(String topic, MqttMessage message) throws Exception {
           if (topic.endsWith("/light/0/status")) {
             ShellyDuo.this.data = (ShellyDuo.StatusData)Coding.decode(message.getPayload(), "json", ShellyDuo.StatusData.class);
-            ShellyDuo.this.state = ShellyDuo.this.data.ison ? Switch.State.ON : Switch.State.OFF;
+            ShellyDuo.this.state = ShellyDuo.this.data.ison ? State.ON : State.OFF;
             ShellyDuo.this.export();
           } 
         }
@@ -103,8 +103,8 @@ public class ShellyDuo extends MqttSwitchDevice implements Light {
   
   public void finish() {
     this.stateMap = new HashMap<>();
-    this.stateMap.put("on", Switch.State.ON.toString());
-    this.stateMap.put("off", Switch.State.OFF.toString());
+    this.stateMap.put("on", State.ON.toString());
+    this.stateMap.put("off", State.OFF.toString());
     publishTopic="shellies/" + this.shellyId + "/light/0/set";
   }
   

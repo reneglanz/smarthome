@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.sound.midi.MidiDevice.Info;
+
 import de.core.CoreException;
 import de.core.Env;
+import de.core.log.Logger;
 import de.core.rt.Launchable;
 import de.core.rt.Releasable;
 import de.core.rt.Reloadable;
@@ -20,7 +23,7 @@ import de.shd.ui.Editable;
 
 public class AutomationStore implements Resource, Launchable, Releasable, Reloadable, Editable {
 	List<Automation> automations;
-
+	Logger logger=Logger.createLogger("AutomationStore");
 	public void release() throws CoreException {
 		if (this.automations != null) {
 			this.automations.forEach(a -> {
@@ -44,6 +47,7 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 						public void accept(Path p,Object loaded) {
 							super.accept(p,loaded);
 							if (loaded instanceof Automation) {
+								AutomationStore.this.logger.info("Loaded Automation " + loaded.toString());
 								((Automation)loaded).setFile(p.toString());
 								AutomationStore.this.automations.add((Automation) loaded);
 							}
