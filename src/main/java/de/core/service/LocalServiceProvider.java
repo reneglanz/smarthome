@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import de.core.CoreException;
 import de.core.Env;
@@ -92,5 +94,9 @@ public class LocalServiceProvider<E extends Service> implements ServiceProvider<
 	public void reload() throws CoreException {
 		release();
 		load();
+	}
+	
+	public List<String> getServiceIds(){
+		return services.keySet().stream().collect(Collectors.toList());
 	}
 }

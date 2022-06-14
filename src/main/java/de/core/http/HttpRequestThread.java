@@ -79,18 +79,19 @@ public class HttpRequestThread implements Runnable {
 		if(hencoding!=null&&"chunked".equals(hencoding.value)) {
 			os=new ChunkedOutputStream(os, 16384);
 		}
-		InputStream is = resp.getContent();
-		if (is instanceof java.io.ByteArrayInputStream) {
-			byte[] ba = new byte[is.available()];
-			is.read(ba);
-			os.write(ba);
-		} else {
-			int read = 0;
-			byte[] ba = new byte[16384];
-			while ((read = is.read(ba)) != -1)
-				os.write(ba, 0, read);
+		try(InputStream is = resp.getContent();){
+			if (is instanceof java.io.ByteArrayInputStream) {
+				byte[] ba = new byte[is.available()];
+				is.read(ba);
+				os.write(ba);
+			} else {
+				int read = 0;
+				byte[] ba = new byte[16384];
+				while ((read = is.read(ba)) != -1)
+					os.write(ba, 0, read);
+			}
+			os.flush();
 		}
-		os.flush();
 	}
 
 	private String getReasonPhrase(int statuscode) {

@@ -5,10 +5,11 @@ import de.core.service.ExceptionResponse;
 public class CoreException extends Exception {
   private static final long serialVersionUID = 3629575150149510946L;
   
-  public static CoreException throwCoreException(Throwable t) {
+  public static CoreException throwCoreException(Throwable t) throws CoreException {
     if (t instanceof CoreException)
-      return (CoreException)t; 
-    return new CoreException(t);
+      throw (CoreException)t; 
+    CoreException e=new CoreException(t);
+    throw e;
   }
   
   public static <T> T throwCoreException(String message) throws CoreException {

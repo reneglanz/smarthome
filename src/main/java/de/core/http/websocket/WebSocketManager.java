@@ -1,15 +1,15 @@
 package de.core.http.websocket;
 
-import de.core.CoreException;
-import de.core.serialize.Serializable;
-import de.core.serialize.annotation.Injectable;
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.core.CoreException;
+import de.core.serialize.Serializable;
+import de.core.serialize.annotation.Injectable;
 
 @Injectable(selfInjecting = true)
 public class WebSocketManager implements Serializable {
@@ -58,7 +58,11 @@ public class WebSocketManager implements Serializable {
   }
   
   public void broadcast(String path, String data) throws CoreException {
-	  this.broadcast(path, data.getBytes());
+	  try {
+		  this.broadcast(path, data.getBytes("UTF-8"));
+	  } catch(Throwable t) {
+		  CoreException.throwCoreException(t);
+	  }
   }
   
   public void broadcast(String path, byte[] data) throws CoreException {

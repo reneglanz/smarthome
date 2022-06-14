@@ -1,5 +1,7 @@
 package de.core.service;
 
+import java.util.List;
+
 import de.core.CoreException;
 
 public interface ServiceProvider<E extends Service> {
@@ -14,4 +16,6 @@ public interface ServiceProvider<E extends Service> {
   void unbind(String handle) throws CoreException;
   
   String getProviderId();
+  
+  List<String> getServiceIds();
 }

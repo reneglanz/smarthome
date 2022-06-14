@@ -10,14 +10,16 @@ import de.core.rt.Releasable;
 import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Element;
 import de.shd.automation.action.Action;
+import de.shd.automation.collector.Collector;
 import de.shd.automation.condition.Condition;
 import de.shd.automation.trigger.AbstractTrigger;
 
 public class Automation implements Serializable, Launchable, Releasable {
-	Logger log=Logger.createLogger("Automation");
+	protected Logger log=Logger.createLogger("Automation");
 	
 	@Element String id;
 	@Element List<AbstractTrigger> trigger;
+	@Element List<Collector> collectors;
 	@Element List<Condition> conditions;
 	@Element(name = "than") List<Action> than0;
 	@Element(name = "else") List<Action> else0;
@@ -64,7 +66,14 @@ public class Automation implements Serializable, Launchable, Releasable {
 		}
 	}
 
-	protected Data data = new Data();
+	protected Data data = new Data() {
+
+		@Override
+		public Logger getLogger() {
+			return log;
+		}
+		
+	};
 
 	private Automation() {
 		this.conditions = new ArrayList<>();
@@ -73,6 +82,9 @@ public class Automation implements Serializable, Launchable, Releasable {
 	public void run() throws CoreException {
 		boolean result = true;
 		this.data.set("datetime", "" + System.currentTimeMillis());
+		if(this.collectors!=null) {
+			collectors.forEach(c->c.collect(this.data));
+		}
 		if (this.conditions != null)
 			for (int i = 0; i < this.conditions.size(); i++) {
 				if (i > 0) {

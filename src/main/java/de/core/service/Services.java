@@ -3,15 +3,19 @@ package de.core.service;
 import de.core.CoreException;
 import de.core.log.Logger;
 import de.core.rt.Scope;
+import de.core.serialize.Coding;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Services {
-  private static final String DEFAULT = "default";
+  public static final String DEFAULT = "default";
   
   private static HashMap<String, ServiceProvider<?>> provider = new HashMap<>();
   
@@ -113,7 +117,7 @@ public class Services {
   public static ServiceProvider<?> getProvider(String handle) {
     return provider.get(handle);
   }
-  
+     
   public static ServiceProvider<?> getProvider(Class<?> clazz) {
     for (Map.Entry<String, ServiceProvider<?>> entry : provider.entrySet()) {
       if (clazz.isAssignableFrom(((ServiceProvider)entry.getValue()).getClass()))
@@ -130,6 +134,10 @@ public class Services {
 		  }
 	  }
 	  return null;
+  }
+  
+  public static List<String> getProviderNames() {
+	  return provider.keySet().stream().collect(Collectors.toList());
   }
   
   private static Object createRemotes(String providerId, String serviceId, Class<? extends Service> type) throws CoreException {

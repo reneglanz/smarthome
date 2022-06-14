@@ -2,6 +2,7 @@ package de.shd.device;
 
 import java.net.URLEncoder;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import de.core.CoreException;
 import de.core.serialize.Serializable;
@@ -14,8 +15,10 @@ public class Recording implements Serializable, Comparable<Recording> {
 	@Element long date;
 	@Element String url;
 	@Element String contentType;
-	@Element String thumbnail;
-	protected Path file;
+	@Element String thumbnailUrl;
+	
+	protected Path videoFile;
+	protected Path thumbnailFile;
 	
 	public Recording() {}
 	
@@ -36,11 +39,11 @@ public class Recording implements Serializable, Comparable<Recording> {
 	}
 
 	public Path getFile() {
-		return file;
+		return videoFile;
 	}
 
 	public void setFile(Path file) {
-		this.file = file;
+		this.videoFile = file;
 	}
 
 	public long getSize() {
@@ -64,11 +67,23 @@ public class Recording implements Serializable, Comparable<Recording> {
 	}
 
 	public void createId() throws CoreException {
-		if(this.file!=null) try {
-			this.id=URLEncoder.encode(Key.createKey(file.toString()),"UTF-8");
+		if(this.videoFile!=null) try {
+			this.id=URLEncoder.encode(Key.createKey(videoFile.toString()),"UTF-8");
 		} catch (Throwable t) {
 			CoreException.throwCoreException(t);
 		}
+	}
+
+	public Path getThumbnailFile() {
+		return thumbnailFile;
+	}
+	
+	public void setThumbnailUrl(String thumbnail) {
+		this.thumbnailUrl = thumbnail;
+	}
+	
+	public void setThumbnailFile(Path thumbnailFile) {
+		this.thumbnailFile = thumbnailFile;
 	}
 
 	@Override

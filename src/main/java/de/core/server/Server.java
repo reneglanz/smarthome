@@ -1,11 +1,13 @@
 package de.core.server;
 
+import java.io.File;
+import java.nio.file.Paths;
+
 import de.core.CoreException;
 import de.core.Env;
 import de.core.db.DBConnectionManager;
 import de.core.ftp.FtpServer;
 import de.core.http.HttpServer;
-import de.core.http.Proxy;
 import de.core.log.FileAppender;
 import de.core.log.Logger;
 import de.core.mqtt.MqttClient;
@@ -20,15 +22,11 @@ import de.core.service.Service;
 import de.core.service.Services;
 import de.core.task.Scheduler;
 import de.core.utils.DirectoryStreamFilter;
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.function.Consumer;
 
 public class Server implements Launchable, Serializable, Releasable, Service {
 	private Scheduler scheduler;
 
 	@Element HttpServer http;
-	@Element Proxy proxy;
 	@Element FtpServer ftp;
 	@Element protected String base;
 	@Element(defaultValue = "0")
@@ -37,6 +35,7 @@ public class Server implements Launchable, Serializable, Releasable, Service {
 	@Element
 	DBConnectionManager dbConnectionManager;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void launch() throws CoreException {
 		Logger.appender.add(new FileAppender(Paths.get(this.base, new String[] { "data", "logs" })));
 		Logger.setRootLogLevel(this.rootLogLevel);
@@ -61,10 +60,6 @@ public class Server implements Launchable, Serializable, Releasable, Service {
 		this.http.start();
 		if (this.ftp != null)
 			this.ftp.launch();
-
-		if (proxy != null) {
-			proxy.start();
-		}
 	}
 
 	public void release() throws CoreException {
@@ -84,5 +79,9 @@ public class Server implements Launchable, Serializable, Releasable, Service {
 				}
 			}
 		}).start();
+	}
+	
+	public String getConnectorUrl(String connector) throws CoreException {
+		return http.getConnectorUrl(connector);
 	}
 }

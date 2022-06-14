@@ -1,10 +1,14 @@
 package de.core.http;
 
+import de.core.CoreException;
 import de.core.http.connector.Connector;
+import de.core.http.connector.SSLConnector;
 import de.core.http.handler.HttpRequestHandler;
 import de.core.log.Logger;
 import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Element;
+
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +37,7 @@ public class HttpServer implements Serializable {
   public void start() {
     if (this.connectors != null)
       this.connectors.forEach(connector -> {
-            this.log.info("Start " + connector.getName());
+            this.log.info("Start " + connector);
             connector.init(this);
             Thread t = new Thread((Runnable)connector);
             t.setName(connector.getName());
@@ -63,5 +67,19 @@ public class HttpServer implements Serializable {
   
   public void addConnector(Connector connector) {
 	  this.connectors.add(connector);
+  }
+  
+  public String getConnectorUrl(String connectorName) throws CoreException {
+	  try {
+		  String hostname=InetAddress.getLocalHost().getHostName();
+		  for(Connector c:connectors) {
+			  if(c.getName().equals(connectorName)) {
+				  return (c instanceof SSLConnector?"https":"http")+("://")+hostname+":"+c.getPort();
+			  }
+		  }
+	  } catch(Throwable t) {
+		  CoreException.throwCoreException(t);
+	  }
+	  return null;
   }
 }

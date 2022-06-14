@@ -54,7 +54,7 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 						}
 					});
 		} catch (Throwable t) {
-			throw CoreException.throwCoreException(t);
+			CoreException.throwCoreException(t);
 		}
 	}
 

@@ -104,6 +104,17 @@ public class HttpRequest {
 		}
 		return null;
 	}
+	
+	public String getHeaderValue(String name) {
+		HttpHeader header=getHeader(name);
+		return header!=null?header.getValue():null;
+	}
+	
+	public long getHeaderValueLong(String name) {
+		HttpHeader header=getHeader(name);
+		return header!=null?Long.parseLong(header.getValue()):-1;
+	}
+
 
 	public String getRequestParameter(String parameter) {
 		return this.requestParameter.get(parameter);

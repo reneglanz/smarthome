@@ -12,16 +12,10 @@ public class Condition implements Serializable {
 	  NUMBER,
 	  UNKNOWN
   }
-	
-	
-  @Element
-  protected Compare compare;
-  
-  @Element
-  protected String value;
-  
-  @Element
-  protected String key;
+		
+  @Element protected Compare compare;
+  @Element protected String value;
+  @Element protected String key;
   
   @Element
   protected ValueType valueType=ValueType.UNKNOWN;

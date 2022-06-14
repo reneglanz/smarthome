@@ -12,7 +12,7 @@ import de.core.utils.SunriseSunset;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class SunTimeDevice extends AbstractDevice implements Sensor, Launchable {
+public class SunTimeDevice extends AbstractDevice implements Sensor<Long[]>, Launchable {
   @Element double latitude;
   @Element double longitude;
   @Injectable Scheduler scheduler;
@@ -42,4 +42,10 @@ public class SunTimeDevice extends AbstractDevice implements Sensor, Launchable 
             }
           }); 
   }
+
+	@Override
+	public Long[] readValue() {
+		Calendar[] times = SunriseSunset.getSunriseSunset(new GregorianCalendar(), this.latitude, this.longitude);
+		return new Long[]{times[0].getTimeInMillis(),times[2].getTimeInMillis()};
+	}
 }

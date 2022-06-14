@@ -58,7 +58,9 @@ public class Cli {
           host = args[i + 1];
         } else if ("o".equals(param)) {
           out = args[i + 1];
-        } 
+        } else { 
+        	params.put(param, args[i + 1]);
+        }
         i++;
       } else if (param.startsWith("--")) {
         param = param.substring(2);
@@ -72,12 +74,11 @@ public class Cli {
           host = args[i + 1];
         } else if ("out".equals(param)) {
           out = args[i + 1];
-        } 
+        } else {
+        	params.put(param, args[i + 1]);
+        }
         i++;
-      } else {
-        params.put(param, args[i + 1]);
-        i++;
-      } 
+      }
     } 
     if (host != null) {
       Scope.setHost(host);

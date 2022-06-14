@@ -14,7 +14,7 @@ import de.shd.device.data.SwitchData;
 import de.shd.update.UpdateService;
 
 public class ContainerDevice extends AbstractDevice 
-	implements Launchable,Switch,Light,Shutter,Range,Sensor,UpdateService {
+	implements Launchable,Switch,Light,Shutter,Range,UpdateService {
 
 	public enum FollowMode {
 		LEADER,

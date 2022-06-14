@@ -1,7 +1,5 @@
 package de.shd.device;
 
-import java.awt.SystemColor;
-
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import de.core.CoreException;

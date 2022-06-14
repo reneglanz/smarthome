@@ -7,6 +7,7 @@ import de.core.CoreException;
 import de.core.http.Http;
 import de.core.serialize.Coding;
 import de.core.serialize.annotation.Element;
+import de.core.service.Call;
 import de.core.utils.Streams;
 import de.shd.device.data.ImageData;
 import de.shd.device.data.StreamData;
@@ -43,4 +44,11 @@ public abstract class AbstractCamera extends AbstractDevice implements Camera {
 	public StreamData getStream() throws CoreException {
 		return new StreamData(videoUrl, videoType);
 	}
+	
+	  public static void main(String[] args) throws CoreException {
+			HashMap<String, Object> p=new HashMap<>();
+			p.put("state", de.shd.device.State.OFF);
+			System.out.println(new String(Coding.encode(new Call("test", "test", "test", p))));
+		  }
+
 }

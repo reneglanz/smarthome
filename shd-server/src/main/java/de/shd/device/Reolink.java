@@ -5,29 +5,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.channels.Channels;
-import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import de.core.CoreException;
 import de.core.ftp.IFtpFileHandler;
 import de.core.http.Http;
-import de.core.http.HttpHeader;
-import de.core.http.HttpRequest;
-import de.core.http.HttpResponse;
-import de.core.http.handler.AbstractHttpRequestHandler;
-import de.core.http.handler.DefaultResponse;
-import de.core.http.handler.FixedLengthHttpResponse;
-import de.core.http.handler.HttpRequestHandler;
+import de.core.http.handler.AbstractFileRequestHandler.FileRessource;
+import de.core.http.handler.DynamicResourceRequestHandler;
 import de.core.log.Logger;
 import de.core.rt.Launchable;
 import de.core.serialize.annotation.Element;
@@ -40,10 +30,13 @@ import de.core.serialize.parser.DefaultReadHandler;
 import de.core.serialize.parser.JsonParser;
 import de.core.serialize.writer.DefaultWriter;
 import de.core.serialize.writer.JsonWriter;
+import de.core.server.admin.AdminService;
+import de.core.service.Services;
 import de.core.task.IntervalTask;
 import de.core.task.Scheduler;
 import de.core.utils.Exec;
 import de.core.utils.FileUtils;
+import de.shd.device.data.SwitchData;
 import de.shd.device.data.TaskData;
 import de.shd.device.data.TextData;
 
@@ -71,7 +64,7 @@ public class Reolink extends AbstractCamera implements IFtpFileHandler, Launchab
 			return baos.toByteArray();
 		}
 		
-		private ComplexElement send() {
+		private ComplexElement send() throws CoreException {
 			try {
 				if(log.isDebug()) log.debug("["+id+"] - send request: " + cmd + ": " + new String(getAsBytes()));
 				byte[] ba=Http.post(getUrl(cmd, token), null,getAsBytes());
@@ -176,72 +169,11 @@ public class Reolink extends AbstractCamera implements IFtpFileHandler, Launchab
 		}
 	}
 	
-	public class RecordingRequestHandler extends AbstractHttpRequestHandler {
-		Pattern RANGE_PATTERN=Pattern.compile("bytes=(\\d*)-(\\d*)");
-		
-		public RecordingRequestHandler() {
-			super("/camera/"+id+"/recordings");
-		}
-		
-		@Override
-		public HttpResponse handleRequest(HttpRequest request) {
-			String requestedFile=request.getRequestPath();
-			requestedFile=requestedFile.substring(requestedFile.lastIndexOf("/")+1,requestedFile.length());
-			Recording recording=getRecording(requestedFile);
-			if(recording!=null&&Files.exists(recording.getFile())) {
-				try {
-					int leng=(int) Files.size(recording.getFile());
-					int start=0;
-					int end=leng-1;
-					HttpHeader range=request.getHeader("Range");
-					if(range!=null) {
-						
-						Matcher matcher=RANGE_PATTERN.matcher(range.getValue());
-						if(matcher.matches()) {
-							String startGroup=matcher.group(1);
-							start=startGroup.isEmpty()?start:Integer.valueOf(startGroup);
-							start=start<0?0:start;
-							String endGroup=matcher.group(2);
-							end=endGroup.isEmpty()?leng-1:end;
-						}
-						log.debug("Range Header found "+String.format("bytes %s-%s/%s", start,end,leng));
-					}
-					int contentlength=end-start+1;
-					DefaultResponse response=new DefaultResponse();
-					//response.addHeader("Content-Disposition", "inline;filename=recording.mp4");
-					response.addHeader("Accept-Ranges", "bytes");
-					response.addHeader("Last-Modified",Long.toString(Files.getLastModifiedTime(recording.getFile()).toMillis()));
-					response.addHeader("Expires",Long.toString(System.currentTimeMillis()+1000*60*20));
-					response.addHeader(new HttpHeader(HttpHeader.CONTENT_TYPE, "video/mp4"));
-					response.addHeader("Content-Range", String.format("bytes %s-%s/%s", start,end,leng));
-					response.setLength(contentlength);
-					try {
-						SeekableByteChannel input=Files.newByteChannel(recording.getFile(),StandardOpenOption.READ);
-						input.position(0);
-						response.setIs(Channels.newInputStream(input));
-						response.setStatusCode(206);
-					} catch (Exception e) {
-					}
-					return response;
-				} catch (Throwable t) {
-					return new FixedLengthHttpResponse(t.getMessage().getBytes(), 500);
-				}
-			} else {
-				return new FixedLengthHttpResponse("File not found".getBytes(), 404);
-			}
-		}
-
-		@Override
-		public boolean keepAlive() {
-			return false;
-		}
-	}
-	
 	@Element protected String host;
 	@Element protected String user;
 	@Element protected String password;
 	@Element protected String recordingPath;
-	@Element protected String videoBaseUrl;
+	@Element(defaultValue="plain" ) protected String httpConnectorName;
 	@Element(defaultValue="10000") protected int syncStatus=10000;
 	
 	private static final Logger log=Logger.createLogger("Reolink");
@@ -249,7 +181,7 @@ public class Reolink extends AbstractCamera implements IFtpFileHandler, Launchab
 	protected State recording=State.UNKNOWN;
 	protected State ftpUpload=State.UNKNOWN;
 	protected List<Recording> recordings=Collections.synchronizedList(new ArrayList<>());
-	protected HttpRequestHandler httpHandler;
+	@Injectable DynamicResourceRequestHandler resourceHandler;
 	@Injectable  Scheduler scheduler;
 	
 	@Override
@@ -331,6 +263,7 @@ public class Reolink extends AbstractCamera implements IFtpFileHandler, Launchab
 	@Override
 	public ExportData createExportData() {
 		ExportData data=new ExportData(getDeviceId(),name,
+									   new SwitchData(this.recording),
 									   new TextData("Aufnahme " + (this.recording==recording.ON?"an":"aus")+(recordings.size()>0?" - "+recordings.size()+" Ereignisse":"")),
 									   new TaskData(10000, "devices:"+id+":getImage"));
 		return data;
@@ -372,30 +305,39 @@ public class Reolink extends AbstractCamera implements IFtpFileHandler, Launchab
 	private void addRecording(Path p) {
 		if(!Files.isDirectory(p)&&p.getFileName().toString().endsWith("mp4")) try {
 			Recording r=new Recording();
-			r.file=p;	
+			r.videoFile=p;	
 			r.date=Files.getLastModifiedTime(r.getFile()).toMillis();
 			r.size=Files.size(r.getFile());
 			r.contentType="mp4";
 			r.createId();
-			r.url=videoBaseUrl+(videoBaseUrl.endsWith("/")?"":"/")+r.getId();
-		
+			r.url=resourceHandler.add(id, new FileRessource(p) {
+				@Override
+				public String getName() {
+					return "video-"+r.getId();
+				}
+			});
+					
 			Path thumbnail=Paths.get(FileUtils.getFileNameWithoutExtension(p)+".jpg");
 			if(!Files.exists(thumbnail)) {
-				createThumbnail(p, thumbnail);
+				createThumbnail(r.videoFile, thumbnail);
 			}
-			if(Files.exists(thumbnail)) {
-				r.thumbnail=getDataUrl(Files.readAllBytes(thumbnail));
-			}
+			r.setThumbnailUrl(resourceHandler.add(id, new FileRessource(thumbnail) {
+				@Override
+				public String getName() {
+					return "thumbnail-"+r.getId();
+				}
+			}));
+			r.setThumbnailFile(thumbnail);
 			if(getRecording(r.getId())==null) {
 				recordings.add(r);
 			}
 		} catch (Throwable t) {
-			t=t;
-		}
+			log.error("Failed to delete "+p.toString(), t);
+		} 
 	}
 	
 	private void createThumbnail(Path video, Path thumbnail) {
-		Exec exec=new Exec("ffmpeg","-i",video.toString(),"-vframes","1","-s","400x222", thumbnail.toString());
+		Exec exec=new Exec("ffmpeg","-i",video.toString(),"-vframes","1","-s","300x210", thumbnail.toString());
 		exec.sync();
 	}
 	
@@ -415,6 +357,11 @@ public class Reolink extends AbstractCamera implements IFtpFileHandler, Launchab
 
 	@Override
 	public void onFile(Path paramPath) {
+		if(!Files.isDirectory(paramPath)&&FileUtils.getFileExtension(paramPath).equals("jpg")) try {
+			Files.delete(paramPath);
+		} catch (IOException e) {
+			log.error("Failed to delete "+paramPath.toString(), e);
+		}
 		addRecording(paramPath);
 	}
 
@@ -436,6 +383,11 @@ public class Reolink extends AbstractCamera implements IFtpFileHandler, Launchab
 			} catch (IOException e) {
 				CoreException.throwCoreException(e);
 			}
+			if(Files.exists(r.getThumbnailFile())) try {
+				Files.delete(r.getThumbnailFile());
+			} catch (IOException e) {
+				CoreException.throwCoreException(e);
+			}
 			recordings.remove(r);
 		}
 	}
@@ -451,18 +403,21 @@ public class Reolink extends AbstractCamera implements IFtpFileHandler, Launchab
 	@Override
 	public void launch() throws CoreException {
 		this.registerFtpFileHandler();
-		this.httpHandler=new RecordingRequestHandler();
-		this.httpHandler.registerHttpRequestHandler();
-		this.searchRecording();
-		if(this.scheduler!=null&&this.syncStatus>0) {
-			scheduler.schedule(new IntervalTask(syncStatus) {
-				@Override
-				public void execute() throws CoreException {
-					getRecordingState();
-					getFtpUploadState();
-					export();
-				}
-			});
+		AdminService admin=Services.get(AdminService.class);
+		if(this.resourceHandler==null) {
+			log.error("No resource handler configured! Can not search for video files");
+		} else {
+			this.searchRecording();
+			if(this.scheduler!=null&&this.syncStatus>0) {
+				scheduler.schedule(new IntervalTask(syncStatus) {
+					@Override
+					public void execute() throws CoreException {
+						getRecordingState();
+						getFtpUploadState();
+						export();
+					}
+				});
+			}
 		}
 	}
 }

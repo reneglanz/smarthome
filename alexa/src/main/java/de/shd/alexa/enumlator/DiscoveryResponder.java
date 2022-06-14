@@ -68,7 +68,7 @@ public class DiscoveryResponder implements Releasable, Service {
   
   protected MutlticastReceiver multicast;
   
-  private boolean checkPacket(DatagramPacket packet) {
+  private boolean checkPacket(DatagramPacket packet) throws CoreException {
     try {
       String data = new String(packet.getData(), "UTF-8");
       return (data.indexOf("M-SEARCH") > -1);

@@ -11,10 +11,8 @@ import de.core.serialize.annotation.Element;
 import de.shd.device.data.SwitchData;
 
 public class MqttSwitchDevice extends MqttDevice implements Switch {
-	@Element
-	Map<String, String> stateMap;
-	@Element(defaultValue = "UNKNOWN")
-	State state = State.UNKNOWN;
+	@Element protected  Map<String, String> stateMap;
+	@Element(defaultValue = "UNKNOWN") protected State state = State.UNKNOWN;
 
 	public State mapState(String external) {
 		if (this.stateMap != null) {

@@ -1,5 +1,6 @@
 package de.shd.automation;
 
+import de.core.log.Logger;
 import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Element;
 import java.util.HashMap;
@@ -22,5 +23,9 @@ public class Data implements Serializable {
   
   public HashMap<String, Object> getData() {
     return this.data;
+  }
+  
+  public Logger getLogger() {
+	  return Logger.createLogger("AutomationData");
   }
 }

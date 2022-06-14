@@ -13,4 +13,6 @@ public interface Connector extends Runnable, Serializable {
   String getName();
   
   ServerSocket createSocket() throws CoreException;
+  
+  int getPort();
 }
