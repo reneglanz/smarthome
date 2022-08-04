@@ -150,11 +150,7 @@ public class CronPattern {
 	}
 
 	public long next() {
-		return next(-1L);
-	}
-
-	public long next(long offset) {
-		long now = ((offset == -1L) ? System.currentTimeMillis() : offset) + 60000L;
+		long now = System.currentTimeMillis() + 60000L;
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.setTimeInMillis(now);
 		cal.set(13, 0);

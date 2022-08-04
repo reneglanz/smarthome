@@ -67,19 +67,27 @@ public class WebSocketManager implements Serializable {
   
   public void broadcast(String path, byte[] data) throws CoreException {
     WebSocketFrame frame = new WebSocketFrame(WebSocketFrame.Opcode.TEXT, data);
-    List<WebSocket> errorSockets = new ArrayList<>();
-    for (WebSocket ws : this.webSockets) {
-      try {
-        ws.send(frame);
-      } catch (IOException e) {
-        errorSockets.add(ws);
-      } 
-    } 
-    errorSockets.forEach(ws -> {
-          try {
-            ws.close();
-          } catch (Exception exception) {}
-        });
+    List<Integer> errorSockets = new ArrayList<>();
+    for(int i=0;i<webSockets.size();i++) {
+    	WebSocket ws=webSockets.get(i);
+    	if(ws!=null) {
+	    	try {
+	    		ws.send(frame);
+	    	} catch (IOException e) {
+	    		errorSockets.add(new Integer(i));
+	    	} 
+    	} else {
+    		errorSockets.add(new Integer(i));
+    	}
+    }
+    	
+    errorSockets.forEach(index -> {
+    	  WebSocket ws=webSockets.get(index);
+    	  if(ws!=null) try {
+    		  ws.close();
+    	  } catch (Exception exception) {}
+    	  webSockets.remove(index.intValue());
+    });
   }
 }
 

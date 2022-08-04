@@ -25,7 +25,6 @@ public class CronTrigger extends AbstractTrigger implements Launchable, Releasab
     
     public void execute() {
       try {
-        CronTrigger.this.automation.getData().set(CronTrigger.this.dataKey(), CronTrigger.this.data(Long.valueOf(System.currentTimeMillis())));
         CronTrigger.this.runAutomation();
       } catch (CoreException e) {
         e.printStackTrace();
@@ -35,8 +34,7 @@ public class CronTrigger extends AbstractTrigger implements Launchable, Releasab
   
   protected CronTrigger() {}
   
-  public CronTrigger(String id, String pattern) {
-    this.name = id;
+  public CronTrigger(String pattern) {
     this.cronPattern = pattern;
   }
   
@@ -53,4 +51,5 @@ public class CronTrigger extends AbstractTrigger implements Launchable, Releasab
     if (this.executor != null && this.task != null)
       this.executor.cancel((de.core.task.Task)this.task); 
   }
+
 }

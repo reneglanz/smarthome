@@ -15,8 +15,8 @@ public abstract class IntervalTask implements Task {
     this.id = UUID.randomUUID().toString();
   }
   
-  public long next(long offset) throws CoreException {
-    return ((offset != -1L) ? offset : System.currentTimeMillis()) + this.interval;
+  public long next() throws CoreException {
+    return System.currentTimeMillis() + this.interval;
   }
   
   public String getId() {

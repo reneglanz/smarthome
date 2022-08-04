@@ -45,7 +45,13 @@ public class DeviceProvider extends LocalServiceProvider<AbstractDevice> impleme
 	@Override
 	public List<String> list() throws CoreException {
 		ArrayList<String>list=new ArrayList<>();
-		this.forEach(device->{list.add(device.name);});
+		this.forEach(device->{
+			if(device.name!=null) {
+				list.add(device.name);
+			} else {
+				list.add(device.id);
+			}
+		});
 		return list;
 	}
 

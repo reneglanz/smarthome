@@ -29,17 +29,12 @@ public class ManualTrigger extends AbstractTrigger implements Launchable {
     
     public State toggle() {
       try {
-        ManualTrigger.this.automation.getData().set(ManualTrigger.this.dataKey(), ManualTrigger.this.data(null));
         ManualTrigger.this.runAutomation();
         return State.ON;
       } catch (CoreException e) {
         return State.UNKNOWN;
       } 
     }
-  }
-  
-  public void trigger() throws CoreException {
-    runAutomation();
   }
   
   public void launch() throws CoreException {

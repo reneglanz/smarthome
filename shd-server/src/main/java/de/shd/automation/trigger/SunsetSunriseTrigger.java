@@ -33,7 +33,6 @@ public class SunsetSunriseTrigger extends AbstractTrigger implements Launchable 
     
     public void execute() {
       try {
-        SunsetSunriseTrigger.this.automation.getData().set(SunsetSunriseTrigger.this.dataKey(), SunsetSunriseTrigger.this.data(Long.valueOf(System.currentTimeMillis())));
         SunsetSunriseTrigger.this.runAutomation();
         SunsetSunriseTrigger.this.scheduler.cancel((de.core.task.Task)SunsetSunriseTrigger.this.task);
         Calendar tomorrow = new GregorianCalendar();

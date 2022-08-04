@@ -22,8 +22,9 @@ public abstract class CronTask implements Task, Serializable {
     this.id = UUID.randomUUID().toString();
   }
   
-  public long next(long offset) throws CoreException {
-    return this.patter.next(offset);
+  @Override
+  public long next() throws CoreException {
+    return this.patter.next();
   }
   
   public String getId() {

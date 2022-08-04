@@ -109,9 +109,13 @@ public class Scheduler extends Thread implements Releasable {
   protected void calculate(ExecutionDetails details) {
     try {
       synchronized (this.SYNC) {
-        details.next = details.task.next(-1L);
-        this.mode = Mode.RECALCULATE;
-        this.SYNC.notify();
+    	if(!details.task.finished()) {
+	        details.next = details.task.next();
+	        this.mode = Mode.RECALCULATE;
+    	} else {
+    		tasks.remove(details);
+    	}
+    	this.SYNC.notify();
       } 
     } catch (CoreException e) {
       details.next = Long.MAX_VALUE;

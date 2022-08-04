@@ -5,12 +5,12 @@ import de.core.log.Logger;
 import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Element;
 import de.shd.automation.Automation;
+import de.shd.automation.Data;
 
 public abstract class AbstractTrigger implements Serializable {
 	Logger logger = Logger.createLogger("Trigger");
-
-	@Element protected String name;
-	@Element protected String payload;
+	@Element protected Data data;
+	
 	protected Automation automation;
 
 	public void setAutomation(Automation automation) {
@@ -20,20 +20,9 @@ public abstract class AbstractTrigger implements Serializable {
 	public void runAutomation() throws CoreException {
 		if (this.automation == null)
 			CoreException.throwCoreException("Automation not set");
-		logger.debug("Automation " + this.automation.getId() + " triggered by " + name+"["+this.getClass().getName()+"]");
+		this.automation.getData().merge(data);
+		this.automation.getData().set("date", Long.toString(System.currentTimeMillis()));
+		logger.info("Automation " + this.automation.getId() + " triggered "+"["+this.getClass().getName()+"]");
 		this.automation.run();
-	}
-
-	public AbstractTrigger setPayload(String payload) {
-		this.payload = payload;
-		return this;
-	}
-
-	public String dataKey() {
-		return ((this.name != null && this.name.length() > 0) ? (this.name + ":") : "") + "payload";
-	}
-
-	public Object data(Object defaultValue) {
-		return (this.payload != null && this.payload.length() > 0) ? this.payload : defaultValue;
 	}
 }

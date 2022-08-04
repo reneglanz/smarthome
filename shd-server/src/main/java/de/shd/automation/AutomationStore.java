@@ -1,5 +1,6 @@
 package de.shd.automation;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -7,11 +8,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.sound.midi.MidiDevice.Info;
-
 import de.core.CoreException;
 import de.core.Env;
 import de.core.log.Logger;
+import de.core.rt.Activatable;
 import de.core.rt.Launchable;
 import de.core.rt.Releasable;
 import de.core.rt.Reloadable;
@@ -21,8 +21,9 @@ import de.core.service.DefaultLoadConsumer;
 import de.core.service.Loader;
 import de.shd.ui.Editable;
 
-public class AutomationStore implements Resource, Launchable, Releasable, Reloadable, Editable {
+public class AutomationStore implements Resource, Launchable, Releasable, Reloadable, Editable, Activatable {
 	List<Automation> automations;
+	List<Automation> deactivatedAutomations;
 	Logger logger=Logger.createLogger("AutomationStore");
 	public void release() throws CoreException {
 		if (this.automations != null) {
@@ -53,6 +54,21 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 							}
 						}
 					});
+			
+			if(Files.exists(Paths.get(Env.get("install.dir") + "/config/automations/deactivated"))){
+				new Loader(Paths.get(Env.get("install.dir") + "/config/automations/deactivated", new String[0]))
+				.load(new DefaultLoadConsumer(null, true) {
+					public void accept(Path p,Object loaded) {
+						super.accept(p,loaded);
+						if (loaded instanceof Automation) {
+							AutomationStore.this.logger.info("Loaded Automation " + loaded.toString());
+							((Automation)loaded).setFile(p.toString());
+							AutomationStore.this.deactivatedAutomations.add((Automation) loaded);
+						}
+					}
+				});
+			}
+			
 		} catch (Throwable t) {
 			CoreException.throwCoreException(t);
 		}
@@ -79,14 +95,22 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 		});
 		return handle;
 	}
+	
+	public Automation get(List<Automation> automations,String handle) throws CoreException {
+		for(Automation a: automations) {
+			if(a.getId().equals(handle)){
+				return a;
+			}
+		}
+		return null;
+	}
 
 	@Override
 	public String get(String handle) throws CoreException {
 		try {
-			for(Automation a: automations) {
-				if(a.getId().equals(handle)){
-					return Coding.toBase64(Coding.encode(a));
-				}
+			Automation a=get(this.automations,handle);
+			if(a!=null) {
+				return Coding.toBase64(Coding.encode(a));
 			}
 		} catch (Throwable t) {
 			CoreException.throwCoreException(t);
@@ -133,5 +157,39 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 				+ "}";
 		template=template.replace("${NAME}", name).replace("${ID}", name);
 		return Coding.toBase64(template.getBytes());		
+	}
+
+	@Override
+	public void activate(String serviceId) throws CoreException {
+		Automation automation=get(this.deactivatedAutomations,serviceId);
+		if(automation!=null) {
+			Path deactivated=Paths.get(automation.getFile());
+			Path path=deactivated.getParent().getParent();
+			try {
+				Files.move(deactivated, path);
+				automation.setFile(path.toString());
+				this.deactivatedAutomations.remove(automation);
+				this.automations.add(automation);
+			} catch(IOException e) {
+				CoreException.throwCoreException(e);
+			}
+		}
+	}
+
+	@Override
+	public void deactivate(String serviceId) throws CoreException {
+		Automation automation=get(this.automations,serviceId);
+		if(automation!=null) {
+			automations.remove(automation);
+			Path path=Paths.get(automation.getFile());
+			Path deactivated=Paths.get(path.getParent().toString(),"deactivated",path.getFileName().toString());
+			try {
+				Files.move(path,deactivated);
+				automation.setFile(deactivated.toString());
+				this.deactivatedAutomations.add(automation);
+			} catch(IOException e) {
+				CoreException.throwCoreException(e);
+			}
+		}
 	}
 }

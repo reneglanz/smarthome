@@ -31,7 +31,7 @@ public class MqttTrigger extends AbstractTrigger implements Launchable, Releasab
     if (this.mqtt != null) {
       this.subscriber = new MqttSubscriber(this.topic) {
           public void messageArrived(String arg0, MqttMessage msg) throws Exception {
-            MqttTrigger.this.automation.getData().set(MqttTrigger.this.dataKey(), new String(msg.getPayload()));
+            MqttTrigger.this.automation.getData().set("mqtt."+topic, new String(msg.getPayload()));
             MqttTrigger.this.runAutomation();
           }
         };

@@ -1,7 +1,6 @@
 package de.shd.automation.action;
 
 import de.core.CoreException;
-import de.core.serialize.Coding;
 import de.core.serialize.annotation.Element;
 import de.core.service.Service;
 import de.core.service.ServiceProvider;
@@ -33,25 +32,20 @@ public class SwitchAction implements Action, Template {
 
 	@Element protected String provider = null;
 	@Element protected String service = null;
-	@Element protected State state;
-	@Element protected String key;
+	@Element protected String state = null;
 
 	protected Switch switch0;
 
 	public void execute(Data data) throws CoreException {
 		Switch switch1 = getService();
-		if (state != null && state != State.UNKNOWN) {
-			switch1.setState(this.state);
-		} else if (key != null) {
-			String value = data.get(key, String.class, null);
-			if (value != null)
-				try {
-					State tmpState = State.valueOf(value);
-					switch1.setState(tmpState);
-				} catch (Exception e) {
-					CoreException.throwCoreException("Invalid value " + value);
-				}
-		}
+		State swState=State.UNKNOWN;
+		String resolved=resolve(this.state, data);
+		try{
+			swState=State.valueOf(resolved);
+			switch1.setState(swState);
+		} catch (Throwable t) {
+			CoreException.throwCoreException(t);
+		} 
 	}
 
 	public Switch getService() {
@@ -73,13 +67,5 @@ public class SwitchAction implements Action, Template {
 			}
 		}
 		return this.switch0;
-	}
-
-	public static void main(String[] args) throws CoreException {
-		SwitchAction a=new SwitchAction();
-		a.key="trigger:payload";
-		a.provider="devives";
-		a.service="schriebtisch";
-		System.out.println(new String(Coding.encode(a)));
 	}
 }

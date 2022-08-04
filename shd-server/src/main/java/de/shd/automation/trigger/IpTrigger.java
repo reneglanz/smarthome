@@ -44,8 +44,7 @@ public class IpTrigger extends AbstractTrigger implements Launchable, Releasable
   
   protected IpTrigger() {}
   
-  public IpTrigger(String id, String host) {
-    this.name = id;
+  public IpTrigger(String host) {
     this.host = host;
   }
   
@@ -66,7 +65,7 @@ public class IpTrigger extends AbstractTrigger implements Launchable, Releasable
       if (this.inetAdress != null) {
         boolean tmp = this.inetAdress.isReachable(this.checkTimeout);
         if (this.changed == -2L) {
-          this.automation.getData().set(dataKey(), tmp ? "available" : "unavailable");
+          this.automation.getData().set("host", tmp ? "available" : "unavailable");
           this.automation.run();
           this.changed = -1L;
           this.reachable = tmp;
@@ -78,7 +77,7 @@ public class IpTrigger extends AbstractTrigger implements Launchable, Releasable
       } 
       if (this.changed != -1L && System.currentTimeMillis() > this.changed) {
         this.changed = -1L;
-        this.automation.getData().set(dataKey(), this.reachable ? "available" : "unavailable");
+        this.automation.getData().set("host", this.reachable ? "available" : "unavailable");
         this.automation.run();
       } 
     } catch (Throwable throwable) {}

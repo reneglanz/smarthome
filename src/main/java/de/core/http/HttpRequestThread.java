@@ -52,7 +52,9 @@ public class HttpRequestThread implements Runnable {
 			}
 			this.log.debug("Request handled in " + (System.currentTimeMillis() - start) + "msec");
 		} catch (Exception e) {
-			this.log.error("Failed to handle reqest from : " + this.socket.getRemoteSocketAddress().toString(), e);
+			if(httpServer.logErrors) {
+				this.log.error("Failed to handle reqest from : " + this.socket.getRemoteSocketAddress().toString(), e);
+			}
 		} finally {
 			try {
 				if (!keepAlive)

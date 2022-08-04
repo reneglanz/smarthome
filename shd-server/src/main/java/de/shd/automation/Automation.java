@@ -131,10 +131,6 @@ public class Automation implements Serializable, Launchable, Releasable {
 		}
 	}
 
-	public Data getData() {
-		return this.data;
-	}
-
 	public void release() throws CoreException {
 		release(this.trigger);
 		release(this.else0);
@@ -163,5 +159,9 @@ public class Automation implements Serializable, Launchable, Releasable {
 
 	public String toString() {
 		return id;
+	}
+	
+	public Data getData() {
+		return this.data;
 	}
 }
