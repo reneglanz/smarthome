@@ -37,6 +37,7 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 			this.automations.clear();
 		}
 		this.automations = Collections.synchronizedList(new ArrayList<>());
+		this.deactivatedAutomations = Collections.synchronizedList(new ArrayList<>());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -93,6 +94,9 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 		automations.forEach(a->{
 			handle.add(a.getId());
 		});
+		deactivatedAutomations.forEach(a->{
+			handle.add(a.getId() + " - deaktiviert");
+		});
 		return handle;
 	}
 	
@@ -109,6 +113,9 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 	public String get(String handle) throws CoreException {
 		try {
 			Automation a=get(this.automations,handle);
+			if(a==null) {
+				a=get(this.deactivatedAutomations,handle);
+			}
 			if(a!=null) {
 				return Coding.toBase64(Coding.encode(a));
 			}
@@ -164,7 +171,7 @@ public class AutomationStore implements Resource, Launchable, Releasable, Reload
 		Automation automation=get(this.deactivatedAutomations,serviceId);
 		if(automation!=null) {
 			Path deactivated=Paths.get(automation.getFile());
-			Path path=deactivated.getParent().getParent();
+			Path path=Paths.get(deactivated.getParent().getParent().toString(),deactivated.getFileName().toString());
 			try {
 				Files.move(deactivated, path);
 				automation.setFile(path.toString());

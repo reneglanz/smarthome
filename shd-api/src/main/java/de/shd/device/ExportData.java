@@ -35,4 +35,9 @@ public class ExportData implements Serializable {
 	public List<Data> getData() {
 		return this.data;
 	}
+	
+	public ExportData addData(Data data) {
+		this.data.add(data);
+		return this;
+	}
 }

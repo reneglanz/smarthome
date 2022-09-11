@@ -7,6 +7,7 @@ import de.core.mqtt.MqttSubscriber;
 import de.core.serialize.Coding;
 import de.core.serialize.Serializable;
 import de.core.serialize.annotation.Element;
+import de.shd.device.data.CurrentPowerData;
 
 public class Tasmota extends MqttSwitchDevice implements PowerMeter {
 	/**
@@ -97,7 +98,6 @@ public class Tasmota extends MqttSwitchDevice implements PowerMeter {
 				if(topic.endsWith("POWER")) {
 					String data = new String(message.getPayload());
 					Tasmota.this.state = Tasmota.this.mapState(data);
-					Tasmota.this.export();
 				} else if(topic.endsWith("tele/SENSOR")) {
 					tele=Coding.decode(message.getPayload(),"json",TasmotaTele.class);
 				} else if(topic.endsWith("tele/STATE")) {
@@ -105,8 +105,8 @@ public class Tasmota extends MqttSwitchDevice implements PowerMeter {
 					if(tasmotaState!=null) {
 						Tasmota.this.state=mapState(tasmotaState.power);
 					}
-					Tasmota.this.export();
 				}
+				Tasmota.this.export();
 			}
 		};
 		if(mqttClient!=null) try {
@@ -160,5 +160,8 @@ public class Tasmota extends MqttSwitchDevice implements PowerMeter {
 	public Integer readValue() {
 		return new Integer(currentPower());
 	}
-
+	
+	public ExportData createExportData() {
+		return super.createExportData().addData(new CurrentPowerData(currentPower()));
+	}
 }

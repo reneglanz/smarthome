@@ -9,6 +9,7 @@ dependencies {
 	compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.28.0'
 	compile('org.apache.ftpserver:ftpserver-core:1.0.6')
 	compile group: 'org.bouncycastle', name: 'bctls-jdk15on', version: '1.57'
+	implementation 'org.eclipse.jetty:jetty-server:11.0.6'
 }
 
 allprojects {
